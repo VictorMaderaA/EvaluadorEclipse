@@ -17,10 +17,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | Dato | Valor |
 |------|-------|
-| Última sección completada | I (Explicabilidad y comunicación del score) |
-| Siguiente sección | J (Estrategia de deployment y operación) |
-| Commit más reciente | 7d505bc docs(análisis): sección H completada |
-| Decisiones que condicionan secciones restantes | Explicación por templates (sin LLM), tono divulgativo-técnico, 2 niveles de detalle |
+| Última sección completada | J (Estrategia de deployment y operación) |
+| Siguiente sección | Validación cruzada |
+| Commit más reciente | 0e12ef2 docs(análisis): sección I completada |
+| Decisiones que condicionan secciones restantes | Todas las secciones A-J completadas. Docker + Nginx + deploy.sh + CF Tunnel. |
 
 ### Archivos explorados
 
@@ -128,10 +128,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | # | Punto | Estado | Notas |
 |---|-------|--------|-------|
-| J1 | Plataforma de hosting (Vercel, Netlify, Cloudflare Pages, S3+CF) | ⬜ | — |
-| J2 | CI/CD mínimo | ⬜ | — |
-| J3 | Dominio y coste operativo | ⬜ | — |
-| J4 | Monitorización básica y alertas | ⬜ | — |
+| J1 | Plataforma de hosting (Vercel, Netlify, Cloudflare Pages, S3+CF) | ✅ | Servidor privado + Docker + Cloudflare Tunnel |
+| J2 | CI/CD mínimo | ✅ | Manual: git pull + ./deploy.sh (build imagen + restart container) |
+| J3 | Dominio y coste operativo | ✅ | Dominio vía CF Tunnel. Coste adicional: $0 |
+| J4 | Monitorización básica y alertas | ✅ | docker restart + docker logs + CF dashboard. Sin herramientas extra |
 
 ---
 
@@ -148,5 +148,5 @@ Para cada sección se sigue un ciclo iterativo:
 | G — UX y vistas | 7 | 7 | 0 | ✅ |
 | H — Modos temporales | 4 | 4 | 0 | ✅ |
 | I — Explicabilidad | 3 | 3 | 0 | ✅ |
-| J — Deployment | 4 | 0 | 4 | ⬜ |
-| **Total** | **48** | **44** | **4** | — |
+| J — Deployment | 4 | 4 | 0 | ✅ |
+| **Total** | **48** | **48** | **0** | ✅ |

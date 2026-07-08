@@ -885,3 +885,114 @@ function generateExplanation(components: ScoreComponents): string {
 **Referencia fuente:** mvp.md § Enfoque de producto: "ranking probabilístico de observación, no como un veredicto binario"
 
 **Impacto:** Templates de texto en `explanation-engine.ts`. Componente de disclaimer en footer o panel info.
+
+---
+
+## J — Estrategia de deployment y operación
+
+### J1 — Plataforma de hosting
+
+**Decisión:** Servidor privado con Docker. Exposición pública mediante Cloudflare Tunnel (configurado por el usuario externamente al proyecto).
+
+**Motivo:** El usuario tiene infraestructura propia y prefiere control total del deployment sin depender de plataformas SaaS. Cloudflare Tunnel proporciona HTTPS, CDN y protección sin exponer puertos del servidor directamente.
+
+**Descartado:** Vercel/Netlify/Cloudflare Pages (el usuario prefiere servidor propio), S3+CloudFront (innecesario teniendo servidor propio + CF Tunnel).
+
+**Referencia fuente:** Requisito del usuario: "despliegue dockerizado en servidor privado + tunnel de Cloudflare"
+
+**Stack de deployment:**
+- Docker: imagen con Nginx sirviendo archivos estáticos del build de Vite
+- Cloudflare Tunnel: configuración externa al proyecto (el usuario lo gestiona)
+- Sin orquestador (docker-compose no necesario para un solo contenedor)
+
+**Impacto:** `Dockerfile` en la raíz del proyecto. Script `deploy.sh` para build+restart.
+
+---
+
+### J2 — CI/CD mínimo
+
+**Decisión:** Deployment manual. El flujo es:
+1. SSH al servidor
+2. `git pull` en el repo
+3. Ejecutar `./deploy.sh` que construye la imagen Docker y reinicia el contenedor
+
+**Script `deploy.sh`:**
+```bash
+#!/bin/bash
+set -e
+
+echo "🔨 Building Docker image..."
+docker build -t eclipse-viewer:latest .
+
+echo "🔄 Stopping old container..."
+docker stop eclipse-viewer 2>/dev/null || true
+docker rm eclipse-viewer 2>/dev/null || true
+
+echo "🚀 Starting new container..."
+docker run -d \
+  --name eclipse-viewer \
+  --restart unless-stopped \
+  -p 8080:80 \
+  eclipse-viewer:latest
+
+echo "✅ Deployed successfully"
+```
+
+**Dockerfile:**
+```dockerfile
+# Build stage
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+```
+
+**Motivo:** Simplicidad máxima. Sin CI/CD externo, sin webhooks, sin automatización compleja. El usuario decide cuándo actualizar, entra al servidor y ejecuta un script. Reproducible y predecible.
+
+**Descartado:** CI/CD automatizado con GitHub Actions (no necesario para deploy manual), docker-compose (un solo contenedor, innecesario), Watchtower (automático, el usuario quiere control manual).
+
+**Referencia fuente:** Requisito del usuario: "despliegue manual entrando al servidor haciendo pull y ejecutando un bash"
+
+**Impacto:** `Dockerfile`, `deploy.sh`, `nginx.conf` en la raíz del proyecto.
+
+---
+
+### J3 — Dominio y coste operativo
+
+**Decisión:** Dominio gestionado por Cloudflare (el usuario ya tiene Cloudflare Tunnel configurado → el dominio/subdominio lo asigna desde el dashboard de Cloudflare).
+
+**Coste operativo:**
+- Servidor: ya existente (coste asumido por el usuario)
+- APIs: $0 (Open-Meteo gratuito, sin key)
+- Dominio: depende del usuario (ya puede tener uno)
+- Docker: sin coste de licencia
+- **Total adicional por el proyecto: $0**
+
+**Referencia fuente:** Requisito del usuario: "configuración de mi parte para un tunnel de Cloudflare"
+
+**Impacto:** Ningún archivo del proyecto depende del dominio. La app es path-agnostic (SPA con base `/`).
+
+---
+
+### J4 — Monitorización básica
+
+**Decisión:** Sin monitorización externa para el MVP. El contenedor Docker tiene `--restart unless-stopped` como mínima resiliencia. Si cae, se reinicia solo.
+
+**Observabilidad disponible sin setup extra:**
+- `docker logs eclipse-viewer` para ver logs de Nginx
+- `docker ps` para verificar que está corriendo
+- Cloudflare dashboard para métricas de tráfico (ya incluido con el tunnel)
+
+**Propuesta futura (si crece):** Añadir healthcheck en Docker + alertas simples. Pero para MVP de uso personal, no se justifica.
+
+**Descartado:** Sentry, Grafana, Prometheus (overkill para MVP personal/grupo reducido).
+
+**Impacto:** Solo el `--restart unless-stopped` en el script de deploy.
