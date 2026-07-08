@@ -1,9 +1,11 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { MapView } from './views/MapView'
+import { Sidebar } from './views/Sidebar'
+import { RankingList } from './components/RankingList'
+import { PointDetail } from './components/PointDetail'
 import type { PointWithScore } from './views/MapView'
 import { generateGrid, gridToGeoJSON, evaluateGrid } from './engines/grid-engine'
-import { getAllPoints } from './data/points-store'
-import { addCustomPoint } from './data/points-store'
+import { getAllPoints, addCustomPoint } from './data/points-store'
 import type { ForecastData, ScoreResult } from './config/types'
 
 // Mock forecast for demo purposes
@@ -17,14 +19,15 @@ const mockForecast: ForecastData = {
 }
 
 function App() {
+  const [selectedPointId, setSelectedPointId] = useState<string | null>(null)
+
   // Generate mock grid data
   const gridGeoJSON = useMemo(() => {
     const cells = generateGrid(
       { south: 38.5, north: 42.5, west: -6.0, east: 1.0 },
-      30, // larger cells for demo
+      30,
     )
 
-    // Mock forecasts with varying cloud cover
     const forecasts = cells.map(() => ({
       ...mockForecast,
       cloudCover: Math.round(Math.random() * 80),
@@ -48,9 +51,25 @@ function App() {
     }))
   }, [])
 
+  // Find selected point data
+  const selectedPoint = useMemo(() => {
+    if (!selectedPointId) return null
+    return points.find(p => p.point.id === selectedPointId) ?? null
+  }, [selectedPointId, points])
+
+  // Mock score result for selected point
+  const selectedScoreResult: ScoreResult | undefined = useMemo(() => {
+    if (!selectedPoint) return undefined
+    return {
+      total: selectedPoint.score ?? 70,
+      components: { meteo: 0.8, layers: 0.7, corridor: 0.6, elevation: 0.5, confidence: 0.9 },
+      penalty: 1.0,
+      explanation: 'Condiciones moderadas previstas para la observación. Alta concordancia entre modelos meteorológicos.',
+    }
+  }, [selectedPoint])
+
   // Mock evaluate function
-  const handleEvaluatePoint = useCallback(async (_lat: number, _lon: number): Promise<ScoreResult> => {
-    // Simulate API delay
+  const handleEvaluatePoint = useCallback(async (): Promise<ScoreResult> => {
     await new Promise(r => setTimeout(r, 500))
     return {
       total: 60 + Math.round(Math.random() * 30),
@@ -68,19 +87,36 @@ function App() {
       coordinates: { lat, lon },
       elevation,
     })
-    // In a real app, would trigger re-render of points
-    console.log(`Punto guardado: ${name} (${lat.toFixed(4)}, ${lon.toFixed(4)})`)
   }, [])
 
   return (
     <div className="h-screen w-screen">
-      <MapView
-        gridGeoJSON={gridGeoJSON}
-        points={points}
-        onPointSelect={(id) => console.log('Selected point:', id)}
-        onEvaluatePoint={handleEvaluatePoint}
-        onSavePoint={handleSavePoint}
-      />
+      <Sidebar>
+        {selectedPoint ? (
+          <PointDetail
+            point={selectedPoint.point}
+            score={selectedScoreResult}
+            solarPosition={{ altitudeDeg: 45, azimuthNorthDeg: 180 }}
+            forecast={mockForecast}
+            onBack={() => setSelectedPointId(null)}
+          />
+        ) : (
+          <RankingList
+            points={points}
+            selectedPointId={selectedPointId}
+            onSelectPoint={setSelectedPointId}
+          />
+        )}
+      </Sidebar>
+      <div className="h-screen lg:ml-[350px]">
+        <MapView
+          gridGeoJSON={gridGeoJSON}
+          points={points}
+          onPointSelect={setSelectedPointId}
+          onEvaluatePoint={handleEvaluatePoint}
+          onSavePoint={handleSavePoint}
+        />
+      </div>
     </div>
   )
 }

@@ -3,7 +3,7 @@
 > Issue: [#9 — Sidebar: ranking de puntos + ficha detallada con desglose](https://github.com/VictorMaderaA/EvaluadorEclipse/issues/9)
 > Análisis: [decisiones-analisis.md § G1-G4, I1-I3](docs/analysis/decisiones-analisis.md)
 > Dependencias: #5 (score engine) ✅ 81b695d, #6 (points store) ✅ 290780e
-> Estado: Pendiente de ejecución
+> Estado: ✅ Completado
 
 ---
 
@@ -11,11 +11,11 @@
 
 | Fase | Estado | Fecha | Commit |
 |------|--------|-------|--------|
-| 1 | ⏳ Pendiente | — | — |
-| 2 | ⏳ Pendiente | — | — |
-| 3 | ⏳ Pendiente | — | — |
-| 4 | ⏳ Pendiente | — | — |
-| 5 | ⏳ Pendiente | — | — |
+| 1 | ✅ Completada | 2026-07-08 | — |
+| 2 | ✅ Completada | 2026-07-08 | — |
+| 3 | ✅ Completada | 2026-07-08 | — |
+| 4 | ✅ Completada | 2026-07-08 | — |
+| 5 | ✅ Completada | 2026-07-08 | — |
 
 ---
 
