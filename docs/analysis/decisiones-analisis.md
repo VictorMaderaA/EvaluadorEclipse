@@ -619,3 +619,120 @@ Peso en el score total: 10% (según B2).
 **Referencia fuente:** mvp.md § Fuentes de datos: "debería tratarse como opcional o de fase 2 salvo que se confirme que aporta mucho valor al ranking del MVP"
 
 **Impacto:** Ninguno en MVP. Registro para roadmap post-MVP.
+
+---
+
+## G — UX y vistas del MVP
+
+### G1 — Layout general
+
+**Decisión:** Split adaptativo:
+- Desktop (≥1024px): sidebar izquierda (~350px) con ranking/detalle + mapa con el espacio restante
+- Mobile (<1024px): mapa fullscreen + bottom sheet deslizable con ranking/detalle
+
+**Motivo:** Maximiza la experiencia en ambos dispositivos. El patrón sidebar+mapa es el más familiar para herramientas de exploración geográfica (Google Maps, Windy, etc.). El bottom sheet en mobile es el estándar actual para apps de mapas.
+
+**Descartado:** Tabs separadas (pierde contexto mapa+ranking simultáneo), solo desktop (el día del eclipse se consulta desde el móvil).
+
+**Referencia fuente:** mvp.md § UX: "Ranking lateral o inferior con orden automático de mejor a peor"
+
+**Impacto:** Componente `Layout` con breakpoint responsive. Sidebar y BottomSheet como variantes del mismo contenedor.
+
+---
+
+### G2 — Responsive
+
+**Decisión:** Desktop-first con adaptación a mobile.
+
+**Motivo:** El caso de uso principal (comparar puntos en mapa + ranking) es más cómodo en desktop. El día del eclipse se consulta desde el móvil → adaptación necesaria pero secundaria en desarrollo.
+
+**Referencia fuente:** mvp.md no especifica. Decisión basada en el caso de uso predominante.
+
+**Impacto:** CSS con media queries. Diseño desktop primero, luego ajuste para <1024px.
+
+---
+
+### G3 — Ficha de punto
+
+**Decisión:** Ficha con estructura fija:
+1. Cabecera: nombre, región, elevación, fuente (catalog/custom)
+2. Score total (0-100) con indicador de tendencia (▲/▼/=)
+3. Desglose de componentes con barras de progreso
+4. Datos solares: altitud y azimut con cardinal
+5. Texto explicativo resumido (1-2 frases)
+6. Gráfico de evolución temporal (últimas 24-72h)
+7. Metadata colapsable (acceso, notas)
+
+**Motivo:** Flujo de lectura de lo más importante (score) a lo más detallado (metadata). El desglose de componentes es clave para la explicabilidad. El gráfico da contexto de tendencia.
+
+**Referencia fuente:** mvp.md § UX: lista de "Elementos de explicación visibles por punto"
+
+**Impacto:** Componente `PointDetail` con sub-componentes para cada bloque.
+
+---
+
+### G4 — Librería de componentes UI
+
+**Decisión:** Tailwind CSS como sistema de estilos base. Componentes propios simples. shadcn/ui como opción para añadir parcialmente si se necesitan componentes más elaborados.
+
+**Motivo:** Los elementos UI del MVP son pocos y específicos (cards, listas, barras, botones, slider temporal). Tailwind permite iteración rápida sin override de estilos de terceros. No se justifica una librería de componentes completa.
+
+**Descartado:** Material UI (bundle grande, estilo difícil de customizar), Chakra (dependencia pesada para pocos componentes).
+
+**Referencia fuente:** mvp.md § Criterios de éxito: "lo bastante simple como para que un agente de código pueda iterar sobre él"
+
+**Impacto:** `tailwindcss` como dependencia. Sin librería de componentes UI inicial.
+
+---
+
+### G5 — Gráficos de evolución temporal
+
+**Decisión:** Recharts para gráficos de evolución del score.
+
+**Motivo:** Declarativo, componentes React nativos, tooltips y leyendas integradas, responsive por defecto. El gráfico principal es un LineChart simple (score vs horas por punto). El bundle (~200KB) es aceptable junto a MapLibre.
+
+**Descartado:** uPlot (ultra ligero pero API más compleja, no React-native), Chart.js (más imperativo), Visx (más código para charts simples).
+
+**Referencia fuente:** mvp.md § UX: "Mostrar evolución temporal de la puntuación de cada punto"
+
+**Impacto:** `recharts` como dependencia. Componente `TimelineChart` en `src/views/`.
+
+---
+
+### G6 — Capa visual de nubosidad sobre el mapa
+
+**Decisión:** Diseñada ahora, implementada post-MVP funcional.
+
+**Diseño:**
+- Fuente: mismos datos `cloud_cover` del grid (B8), sin API adicional
+- Visualización: capa GeoJSON `fill` idéntica al heatmap pero coloreada por nubosidad
+- Interacción: toggle en UI para alternar entre "vista score" y "vista nubes"
+- Base de relieve: terrain tiles de MapLibre (sutil, activable)
+
+**Alcance MVP:** La estructura de datos ya soporta esto (el grid tiene cloud_cover por celda). Solo falta el toggle y el estilo de la capa → se implementa después del heatmap de score funcional.
+
+**Referencia fuente:** Requisito del usuario: "activar una capa meteorológica general... solo para las nubes por encima del mapa"
+
+**Impacto:** Mínimo en arquitectura (ya contemplado). Implementación visual post-core.
+
+---
+
+### G7 — Click en mapa para evaluar punto arbitrario
+
+**Decisión:** Al hacer click en cualquier punto del mapa (fuera de un marcador existente), se evalúa ese punto on-demand y se muestra su score en un popup/ficha temporal. Se ofrece un botón "Guardar punto" para añadirlo a la lista custom (localStorage).
+
+**Flujo:**
+1. Usuario hace click en coordenada libre del mapa
+2. Se muestra un popup inmediato con: coordenadas, "Evaluando..."
+3. Se consulta: elevación (API), forecast (API con cache), posición solar (SunCalc local)
+4. Se calcula score completo (con corredor) y se muestra en el popup
+5. El popup incluye un botón "📌 Guardar punto" que pide nombre al usuario y lo añade a localStorage como punto custom
+6. Si el usuario no guarda, el popup se cierra al hacer click en otro sitio (evaluación efímera)
+
+**Motivo:** Permite exploración libre sin comprometerse a registrar cada punto. El botón de guardar conecta naturalmente con el sistema de puntos custom (D1). Reduce fricción: el usuario puede evaluar rápido y solo guardar lo que le interesa.
+
+**Descartado:** Solo evaluar puntos registrados (limita la exploración), evaluación automática al hover (demasiadas llamadas API).
+
+**Referencia fuente:** Requisito del usuario: "poder hacer click sobre un punto para evaluarlo aunque no esté en los registrados... incluir botón para agregar a los del localStorage"
+
+**Impacto:** Handler `onClick` en MapLibre con coordenadas. Popup temporal con evaluación. Integración con `points-store.ts` para el guardado.

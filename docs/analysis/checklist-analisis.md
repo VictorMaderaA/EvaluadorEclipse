@@ -17,10 +17,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | Dato | Valor |
 |------|-------|
-| Última sección completada | F (Elevación y relieve) |
-| Siguiente sección | G (UX y vistas del MVP) |
-| Commit más reciente | 5d5c83c docs(análisis): sección E completada |
-| Decisiones que condicionan secciones restantes | Stack completo definido. Score: híbrido, 5 componentes (30/25/25/10/10). Datos: Open-Meteo forecast+elevation, SunCalc, JSON+localStorage. Cache 2 niveles. Grid 10km heatmap. Horizonte fuera MVP. |
+| Última sección completada | G (UX y vistas del MVP) |
+| Siguiente sección | H (Modos temporales) |
+| Commit más reciente | d39f61a docs(análisis): sección F completada |
+| Decisiones que condicionan secciones restantes | Layout split adaptativo, Tailwind+Recharts, click en mapa para evaluar+guardar, capa nubes post-MVP, ficha con desglose+timeline |
 
 ### Archivos explorados
 
@@ -99,12 +99,13 @@ Para cada sección se sigue un ciclo iterativo:
 
 | # | Punto | Estado | Notas |
 |---|-------|--------|-------|
-| G1 | Layout general: sidebar + mapa vs tabs vs otra disposición | ⬜ | mvp.md: "ranking lateral o inferior" |
-| G2 | Responsive / mobile-first vs desktop-first | ⬜ | — |
-| G3 | Ficha de punto: qué datos mostrar y en qué orden | ⬜ | mvp.md lista elementos |
-| G4 | Librería de componentes UI (Tailwind, Material, custom) | ⬜ | — |
-| G5 | Gráficos de evolución temporal (librería de charts) | ⬜ | — |
-| G6 | Capa visual de nubosidad sobre el mapa (tipo radar meteorológico) | ⬜ | Fase posterior. Visualizar nubes por capas sobre relieve para entender bloqueos |
+| G1 | Layout general: sidebar + mapa vs tabs vs otra disposición | ✅ | Split adaptativo: sidebar desktop + bottom sheet mobile |
+| G2 | Responsive / mobile-first vs desktop-first | ✅ | Desktop-first con adaptación mobile |
+| G3 | Ficha de punto: qué datos mostrar y en qué orden | ✅ | Score→desglose→solar→explicación→timeline→metadata |
+| G4 | Librería de componentes UI (Tailwind, Material, custom) | ✅ | Tailwind CSS + componentes propios |
+| G5 | Gráficos de evolución temporal (librería de charts) | ✅ | Recharts |
+| G6 | Capa visual de nubosidad sobre el mapa (tipo radar meteorológico) | ✅ | Diseñada, implementación post-MVP funcional |
+| G7 | Click en mapa para evaluar punto arbitrario + guardar como custom | ✅ | Popup efímero con score + botón guardar a localStorage |
 
 ## Sección H — Modos temporales (72h vs eclipse) [media]
 
@@ -144,8 +145,8 @@ Para cada sección se sigue un ciclo iterativo:
 | D — Catálogo puntos | 4 | 4 | 0 | ✅ |
 | E — Motor solar | 4 | 4 | 0 | ✅ |
 | F — Elevación | 3 | 3 | 0 | ✅ |
-| G — UX y vistas | 6 | 0 | 6 | ⬜ |
+| G — UX y vistas | 7 | 7 | 0 | ✅ |
 | H — Modos temporales | 4 | 0 | 4 | ⬜ |
 | I — Explicabilidad | 3 | 0 | 3 | ⬜ |
 | J — Deployment | 4 | 0 | 4 | ⬜ |
-| **Total** | **47** | **30** | **17** | — |
+| **Total** | **48** | **37** | **11** | — |
