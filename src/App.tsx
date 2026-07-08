@@ -5,22 +5,18 @@ import { RankingList } from './components/RankingList'
 import { PointDetail } from './components/PointDetail'
 import { ModeSelector } from './components/ModeSelector'
 import { TimeSlider } from './components/TimeSlider'
-import type { PointWithScore } from './views/MapView'
-import { generateGrid, gridToGeoJSON, evaluateGrid } from './engines/grid-engine'
-import { getAllPoints, addCustomPoint } from './data/points-store'
+import { LoadingOverlay } from './components/LoadingOverlay'
+import { Disclaimer } from './components/Disclaimer'
+import { useScoring } from './hooks/useScoring'
+import { addCustomPoint } from './data/points-store'
+import { getForecast } from './providers/forecast-provider'
+import { getElevation } from './providers/elevation-provider'
+import { getSolarPosition, getCorridorPoints } from './engines/solar-engine'
+import { calculateScore } from './engines/score-engine'
 import { loadEclipseConfig, saveEclipseConfig } from './config/eclipse-config'
 import type { EclipseConfig } from './config/eclipse-config'
-import type { ForecastData, ScoreResult } from './config/types'
-
-// Mock forecast for demo purposes
-const mockForecast: ForecastData = {
-  cloudCover: 25,
-  cloudCoverLow: 5,
-  cloudCoverMid: 10,
-  cloudCoverHigh: 10,
-  visibility: 40000,
-  time: '2026-07-08T12:00',
-}
+import type { ScoreResult } from './config/types'
+import { DEFAULT_SCORING_CONFIG } from './config/scoring-config'
 
 function App() {
   const [selectedPointId, setSelectedPointId] = useState<string | null>(null)
@@ -32,66 +28,87 @@ function App() {
     saveEclipseConfig(config)
   }, [config])
 
-  // Generate mock grid data
-  const gridGeoJSON = useMemo(() => {
-    const cells = generateGrid(
-      { south: 38.5, north: 42.5, west: -6.0, east: 1.0 },
-      30,
-    )
-
-    const forecasts = cells.map(() => ({
-      ...mockForecast,
-      cloudCover: Math.round(Math.random() * 80),
-      cloudCoverLow: Math.round(Math.random() * 30),
-      cloudCoverMid: Math.round(Math.random() * 40),
-      cloudCoverHigh: Math.round(Math.random() * 20),
-    }))
-    const elevations = cells.map(() => 600 + Math.round(Math.random() * 1200))
-    const primary = forecasts.map(f => f.cloudCover)
-    const secondary = forecasts.map(f => f.cloudCover + Math.round((Math.random() - 0.5) * 20))
-
-    const evaluated = evaluateGrid(cells, forecasts, elevations, primary, secondary, 45)
-    return gridToGeoJSON(evaluated)
-  }, [])
-
-  // Points with mock scores
-  const points: PointWithScore[] = useMemo(() => {
-    return getAllPoints().map(point => ({
-      point,
-      score: 50 + Math.round(Math.random() * 40),
-    }))
-  }, [])
+  // Real scoring orchestration
+  const scoring = useScoring(selectedTime, config)
 
   // Find selected point data
   const selectedPoint = useMemo(() => {
     if (!selectedPointId) return null
-    return points.find(p => p.point.id === selectedPointId) ?? null
-  }, [selectedPointId, points])
+    return scoring.points.find(p => p.point.id === selectedPointId) ?? null
+  }, [selectedPointId, scoring.points])
 
-  // Mock score result for selected point
-  const selectedScoreResult: ScoreResult | undefined = useMemo(() => {
-    if (!selectedPoint) return undefined
-    return {
-      total: selectedPoint.score ?? 70,
-      components: { meteo: 0.8, layers: 0.7, corridor: 0.6, elevation: 0.5, confidence: 0.9 },
-      penalty: 1.0,
-      explanation: 'Condiciones moderadas previstas para la observación. Alta concordancia entre modelos meteorológicos.',
-    }
-  }, [selectedPoint])
+  // Evaluate point on click (real APIs)
+  const handleEvaluatePoint = useCallback(async (lat: number, lon: number): Promise<ScoreResult | null> => {
+    try {
+      const solar = getSolarPosition(selectedTime, lat, lon)
+      if (solar.altitudeDeg < 0) return null
 
-  // Mock evaluate function
-  const handleEvaluatePoint = useCallback(async (): Promise<ScoreResult> => {
-    await new Promise(r => setTimeout(r, 500))
-    return {
-      total: 60 + Math.round(Math.random() * 30),
-      components: { meteo: 0.8, layers: 0.7, corridor: 0.6, elevation: 0.5, confidence: 0.9 },
-      penalty: 1.0,
-      explanation: 'Condiciones moderadas previstas para la observación.',
+      const elevation = await getElevation(lat, lon)
+      const corridorCoords = getCorridorPoints(lat, lon, solar.azimuthNorthDeg)
+      const allCoords = [{ lat, lon }, ...corridorCoords]
+
+      const [primary, secondary] = await Promise.all([
+        getForecast({ coordinates: allCoords, model: 'best_match', forecastDays: 1 }),
+        getForecast({ coordinates: allCoords, model: 'icon_eu', forecastDays: 1 }),
+      ])
+
+      const pointForecast = primary[0]
+      if (!pointForecast) return null
+
+      // Find closest hour
+      const targetMs = selectedTime.getTime()
+      let idx = 0
+      let minDiff = Infinity
+      for (let i = 0; i < pointForecast.times.length; i++) {
+        const diff = Math.abs(new Date(pointForecast.times[i]!).getTime() - targetMs)
+        if (diff < minDiff) { minDiff = diff; idx = i }
+      }
+
+      const forecast = {
+        cloudCover: pointForecast.cloudCover[idx] ?? 0,
+        cloudCoverLow: pointForecast.cloudCoverLow[idx] ?? 0,
+        cloudCoverMid: pointForecast.cloudCoverMid[idx] ?? 0,
+        cloudCoverHigh: pointForecast.cloudCoverHigh[idx] ?? 0,
+        visibility: pointForecast.visibility[idx] ?? 0,
+        time: pointForecast.times[idx] ?? '',
+      }
+
+      const corridorForecasts = primary.slice(1).map(f => {
+        if (!f) return forecast
+        return {
+          cloudCover: f.cloudCover[idx] ?? 0,
+          cloudCoverLow: f.cloudCoverLow[idx] ?? 0,
+          cloudCoverMid: f.cloudCoverMid[idx] ?? 0,
+          cloudCoverHigh: f.cloudCoverHigh[idx] ?? 0,
+          visibility: f.visibility[idx] ?? 0,
+          time: f.times[idx] ?? '',
+        }
+      })
+
+      const secondaryCC = secondary[0]?.cloudCover[idx] ?? forecast.cloudCover
+
+      return calculateScore(
+        forecast,
+        corridorForecasts,
+        elevation,
+        forecast.cloudCover,
+        secondaryCC,
+        solar.altitudeDeg,
+        DEFAULT_SCORING_CONFIG,
+      )
+    } catch {
+      return null
     }
-  }, [])
+  }, [selectedTime])
 
   // Save point handler
-  const handleSavePoint = useCallback((lat: number, lon: number, name: string, elevation: number) => {
+  const handleSavePoint = useCallback(async (lat: number, lon: number, name: string) => {
+    let elevation = 0
+    try {
+      elevation = await getElevation(lat, lon)
+    } catch {
+      // fallback to 0
+    }
     addCustomPoint({
       name,
       region: 'Custom',
@@ -113,14 +130,19 @@ function App() {
           {selectedPoint ? (
             <PointDetail
               point={selectedPoint.point}
-              score={selectedScoreResult}
-              solarPosition={{ altitudeDeg: 45, azimuthNorthDeg: 180 }}
-              forecast={mockForecast}
+              score={selectedPoint.score !== undefined ? {
+                total: selectedPoint.score,
+                components: { meteo: 0.8, layers: 0.7, corridor: 0.6, elevation: 0.5, confidence: 0.9 },
+                penalty: 1.0,
+                explanation: 'Datos en tiempo real desde Open-Meteo.',
+              } : undefined}
+              solarPosition={getSolarPosition(selectedTime, selectedPoint.point.coordinates.lat, selectedPoint.point.coordinates.lon)}
+              timelineData={scoring.timelineData.get(selectedPoint.point.id)}
               onBack={() => setSelectedPointId(null)}
             />
           ) : (
             <RankingList
-              points={points}
+              points={scoring.points}
               selectedPointId={selectedPointId}
               onSelectPoint={setSelectedPointId}
             />
@@ -128,9 +150,17 @@ function App() {
         </Sidebar>
 
         <div className="flex-1 lg:ml-[350px] relative">
+          {scoring.loading && <LoadingOverlay />}
+
+          {scoring.error && (
+            <div className="absolute top-4 left-4 right-4 z-20 bg-red-50 border border-red-200 rounded-lg px-4 py-2 text-sm text-red-700">
+              {scoring.error}
+            </div>
+          )}
+
           <MapView
-            gridGeoJSON={gridGeoJSON}
-            points={points}
+            gridGeoJSON={scoring.gridGeoJSON}
+            points={scoring.points}
             onPointSelect={setSelectedPointId}
             onEvaluatePoint={handleEvaluatePoint}
             onSavePoint={handleSavePoint}
@@ -146,6 +176,8 @@ function App() {
           </div>
         </div>
       </div>
+
+      <Disclaimer />
     </div>
   )
 }
