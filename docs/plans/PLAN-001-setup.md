@@ -2,7 +2,7 @@
 
 > Issue: [#1 — Setup del proyecto: Vite + React + TypeScript + Tailwind + MapLibre](https://github.com/VictorMaderaA/EvaluadorEclipse/issues/1)
 > Análisis: [decisiones-analisis.md § A](docs/analysis/decisiones-analisis.md), [§ J2](docs/analysis/decisiones-analisis.md)
-> Estado: Pendiente de ejecución
+> Estado: ✅ Completado
 
 ---
 
@@ -10,11 +10,11 @@
 
 | Fase | Estado | Fecha | Commit |
 |------|--------|-------|--------|
-| 1 | ⏳ Pendiente | — | — |
-| 2 | ⏳ Pendiente | — | — |
-| 3 | ⏳ Pendiente | — | — |
-| 4 | ⏳ Pendiente | — | — |
-| 5 | ⏳ Pendiente | — | — |
+| 1 | ✅ Completada | 2026-07-08 | — |
+| 2 | ✅ Completada | 2026-07-08 | — |
+| 3 | ✅ Completada | 2026-07-08 | — |
+| 4 | ✅ Completada | 2026-07-08 | — |
+| 5 | ✅ Completada | 2026-07-08 | — |
 
 ---
 
