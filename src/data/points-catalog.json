@@ -1,0 +1,82 @@
+[
+  {
+    "id": "cat-001",
+    "name": "Alto de Navacerrada",
+    "region": "Sierra de Guadarrama, Madrid",
+    "coordinates": { "lat": 40.7809, "lon": -4.0065 },
+    "elevation": 1860,
+    "source": "catalog",
+    "tags": ["montaña", "accesible por carretera"],
+    "metadata": { "access": "Puerto de montaña con aparcamiento", "parking": true }
+  },
+  {
+    "id": "cat-002",
+    "name": "Pico Veleta (acceso carretera)",
+    "region": "Sierra Nevada, Granada",
+    "coordinates": { "lat": 37.0563, "lon": -3.3667 },
+    "elevation": 2500,
+    "source": "catalog",
+    "tags": ["alta montaña", "horizonte despejado"],
+    "metadata": { "access": "Carretera hasta Hoya de la Mora (2500m)", "parking": true }
+  },
+  {
+    "id": "cat-003",
+    "name": "Observatorio del Teide",
+    "region": "Tenerife, Canarias",
+    "coordinates": { "lat": 28.3000, "lon": -16.5117 },
+    "elevation": 2390,
+    "source": "catalog",
+    "tags": ["observatorio", "cielos limpios", "isla"],
+    "metadata": { "access": "Carretera TF-24", "parking": true, "notes": "Requiere permiso para zona del observatorio" }
+  },
+  {
+    "id": "cat-004",
+    "name": "Javalambre",
+    "region": "Sierra de Javalambre, Teruel",
+    "coordinates": { "lat": 40.0781, "lon": -1.0158 },
+    "elevation": 1950,
+    "source": "catalog",
+    "tags": ["observatorio", "baja contaminación lumínica"],
+    "metadata": { "access": "Pista forestal desde Camarena de la Sierra", "parking": false }
+  },
+  {
+    "id": "cat-005",
+    "name": "Pic du Midi de Bigorre",
+    "region": "Pirineos, Hautes-Pyrénées (Francia)",
+    "coordinates": { "lat": 42.9372, "lon": 0.1411 },
+    "elevation": 2877,
+    "source": "catalog",
+    "tags": ["observatorio", "alta montaña", "frontera"],
+    "metadata": { "access": "Teleférico desde La Mongie", "parking": true }
+  },
+  {
+    "id": "cat-006",
+    "name": "Sierra de Gúdar (Valdelinares)",
+    "region": "Teruel, Aragón",
+    "coordinates": { "lat": 40.3833, "lon": -0.6333 },
+    "elevation": 1690,
+    "source": "catalog",
+    "tags": ["meseta alta", "horizonte amplio"],
+    "metadata": { "access": "Carretera A-1701", "parking": true }
+  },
+  {
+    "id": "cat-007",
+    "name": "Peña de Francia",
+    "region": "Sierra de Francia, Salamanca",
+    "coordinates": { "lat": 40.5128, "lon": -6.1706 },
+    "elevation": 1723,
+    "source": "catalog",
+    "tags": ["santuario", "horizonte 360°"],
+    "metadata": { "access": "Carretera hasta la cima", "parking": true }
+  },
+  {
+    "id": "cat-008",
+    "name": "Moncayo (zona media)",
+    "region": "Sistema Ibérico, Zaragoza",
+    "coordinates": { "lat": 41.7872, "lon": -1.8381 },
+    "elevation": 1600,
+    "source": "catalog",
+    "tags": ["parque natural", "meseta"],
+    "metadata": { "access": "Sendero desde Santuario de Moncayo", "parking": true, "difficulty": "media" }
+  }
+]

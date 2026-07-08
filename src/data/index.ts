@@ -1,2 +1,7 @@
-// Points catalog and points store
-// Implemented in issue #6
+export {
+  getAllPoints,
+  getCatalogPoints,
+  getCustomPoints,
+  addCustomPoint,
+  removeCustomPoint,
+} from './points-store'

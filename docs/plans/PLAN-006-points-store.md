@@ -3,7 +3,7 @@
 > Issue: [#6 — Points Store: catálogo base + puntos custom en localStorage](https://github.com/VictorMaderaA/EvaluadorEclipse/issues/6)
 > Análisis: [decisiones-analisis.md § D1-D4](docs/analysis/decisiones-analisis.md)
 > Dependencia: #1 (setup) — ✅ Completada (commit c62cadd)
-> Estado: Pendiente de ejecución
+> Estado: ✅ Completado
 
 ---
 
@@ -11,9 +11,9 @@
 
 | Fase | Estado | Fecha | Commit |
 |------|--------|-------|--------|
-| 1 | ⏳ Pendiente | — | — |
-| 2 | ⏳ Pendiente | — | — |
-| 3 | ⏳ Pendiente | — | — |
+| 1 | ✅ Completada | 2026-07-08 | — |
+| 2 | ✅ Completada | 2026-07-08 | — |
+| 3 | ✅ Completada | 2026-07-08 | — |
 
 ---
 
