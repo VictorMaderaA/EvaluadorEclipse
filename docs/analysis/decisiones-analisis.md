@@ -283,3 +283,100 @@ interface ScoringConfig {
 ### Nota para secciones futuras
 
 Se registra para Sección G (UX): el usuario quiere además una **capa visual de nubosidad sobre mapa con relieve** (tipo radar meteorológico), toggleable, para ver las nubes que motivan el score. Registrado como G6. No es scoring, es visualización complementaria.
+
+---
+
+## C — Integración meteorológica (Open-Meteo)
+
+### C1 — Modelos meteorológicos
+
+**Decisión:** Modelo principal `best_match` (default de Open-Meteo, selecciona automáticamente el mejor modelo para cada coordenada). Modelo secundario `icon_eu` (DWD ICON EU) para el componente de confianza (B6).
+
+**Motivo:** `best_match` es el más conveniente porque Open-Meteo ya optimiza la selección del modelo con mejor resolución local. `icon_eu` tiene 7km de resolución, cubre toda España, se actualiza cada 3 horas y es un modelo diferente al que normalmente selecciona `best_match` para España → da buena señal de acuerdo/desacuerdo.
+
+**Descartado:**
+- `ecmwf_ifs` como secundario (updates cada 6h, más lento; 9km resolución inferior a ICON-EU para Europa)
+- `arpege_europe` (cobertura parcial de España, especialmente sur)
+- Ensemble completo (demasiadas llamadas para MVP)
+
+**Referencia fuente:** mvp.md § Fuentes de datos: "variantes por modelo y ensemble mean"
+
+**Paths explorados:**
+- https://open-meteo.com/en/docs — documentación completa de la API, modelos disponibles, tabla de resoluciones
+
+**Impacto:** `src/providers/forecast-provider.ts` — debe aceptar parámetro de modelo. Dos llamadas por batch (una por modelo).
+
+---
+
+### C2 — Variables exactas
+
+**Decisión:** Variables horarias a consultar:
+- `cloud_cover` — nubosidad total (%)
+- `cloud_cover_low` — nubes bajas hasta 3km (%)
+- `cloud_cover_mid` — nubes medias 3-8km (%)
+- `cloud_cover_high` — nubes altas >8km (%)
+- `visibility` — visibilidad en metros (complementaria para niebla/calima)
+
+**Motivo:** Cubren todos los componentes del scoring (B1-B4). Nubosidad total para el score base y penalty. Capas para el componente por capas. Visibility como señal complementaria para condiciones de baja visibilidad no necesariamente causadas por nubes (niebla, calima).
+
+**Descartado:** `relative_humidity_2m` (correlaciona con nubosidad, redundante), variables de precipitación (no aportan al score de observación visual directa).
+
+**Referencia fuente:** mvp.md § Fuentes de datos: lista de variables de interés.
+
+**Parámetro API:**
+```
+hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility
+```
+
+**Impacto:** Interface `ForecastData` en TypeScript con estos 5 campos + timestamps.
+
+---
+
+### C3 — Estrategia de cache y refresco
+
+**Decisión:** Cache en memoria (Map JS) con TTL de 1 hora. Key: `${lat},${lon},${model}`. Al recargar página se obtiene forecast fresco.
+
+**Motivo:** Los modelos se actualizan cada 1-6h → TTL de 1h garantiza datos razonablemente frescos sin redundar llamadas durante uso normal de la sesión. Sin complejidad de serialización a localStorage. En una sesión típica (<1h), el usuario navega entre vistas sin repetir peticiones.
+
+**Descartado:** localStorage con TTL (complejidad de serialización, datos potencialmente stale entre sesiones), sin cache (demasiadas llamadas al cambiar entre vistas).
+
+**Referencia fuente:** mvp.md § Arquitectura: "Cache temporal en memoria o estrategia de refresco simple para evitar llamadas redundantes"
+
+**Impacto:** `src/providers/forecast-cache.ts` — Map con TTL check en cada acceso.
+
+---
+
+### C4 — Manejo de errores y fallback
+
+**Decisión:**
+1. Si falla una petición → retry 1 vez tras 2 segundos
+2. Si sigue fallando → punto marcado como "sin datos" con indicador visual en UI
+3. Si el modelo secundario (`icon_eu`) falla → confianza = 0.5 (neutro, no penaliza ni bonifica)
+4. No hay fallback entre modelos: no mezclar fuentes de forma opaca
+
+**Motivo:** Simplicidad y transparencia. Es mejor mostrar "sin datos" que presentar un score calculado con datos de fuente diferente sin que el usuario lo sepa. El valor neutro de confianza (0.5) no distorsiona el ranking cuando el dato no está disponible.
+
+**Descartado:** Fallback automático a otro modelo (opacidad, puede generar inconsistencias en el ranking), cache indefinida de último dato conocido (puede ser muy stale).
+
+**Referencia fuente:** mvp.md § Riesgos: "Riesgo de scoring opaco"
+
+**Impacto:** Lógica de retry en `forecast-provider.ts`. Estado "sin datos" en la UI por punto.
+
+---
+
+### C5 — Rate limiting y batching
+
+**Decisión:** Usar el soporte nativo de Open-Meteo para coordenadas múltiples en una llamada (`&latitude=lat1,lat2,...&longitude=lon1,lon2,...`). Batches de hasta 50 coordenadas. Throttle de 200ms entre llamadas.
+
+**Estimación de llamadas por refresco completo:**
+- Grid (160 celdas): ceil(160/50) = 4 batches × 2 modelos = 8 llamadas HTTP
+- Catálogo (30 puntos + 90 corredor): ceil(120/50) = 3 batches × 2 modelos = 6 llamadas HTTP
+- **Total: ~14 llamadas HTTP por refresco completo** (~3 segundos con throttle)
+
+**Motivo:** El batching reduce drásticamente el número de llamadas HTTP. 14 llamadas es trivial y no estresará la API. El throttle de 200ms es cortesía para no mandar todo en paralelo absoluto.
+
+**Descartado:** Una llamada por coordenada (160+ llamadas HTTP, lento e innecesario), batches más grandes (>50 coords no probado, conservar margen).
+
+**Referencia fuente:** Documentación API Open-Meteo: "Multiple coordinates can be comma separated"
+
+**Impacto:** `src/providers/forecast-provider.ts` — función de batching que agrupa coords y distribuye en llamadas.

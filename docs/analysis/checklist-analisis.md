@@ -17,16 +17,17 @@ Para cada sección se sigue un ciclo iterativo:
 
 | Dato | Valor |
 |------|-------|
-| Última sección completada | B (Modelo de scoring v1) |
-| Siguiente sección | C (Integración meteorológica) |
-| Commit más reciente | 9cc89fb docs(análisis): sección A completada |
-| Decisiones que condicionan secciones restantes | TypeScript+React+Vite+MapLibre, SPA pura, API keys en localStorage, Score híbrido (aditivo+penalty), corredor 20km 3 puntos, grid 10km sin corredor, 2 modelos para confianza |
+| Última sección completada | C (Integración meteorológica) |
+| Siguiente sección | D (Catálogo de puntos) |
+| Commit más reciente | 1eb704f docs(análisis): sección B completada |
+| Decisiones que condicionan secciones restantes | TypeScript+React+Vite+MapLibre, SPA pura, API keys en localStorage, Score híbrido, corredor 20km 3 puntos, grid 10km sin corredor, 2 modelos (best_match+icon_eu), batch 50 coords, cache 1h |
 
 ### Archivos explorados
 
 | Path | Relevancia | Sección |
 |------|-----------|---------|
 | `/home/develop/projects/eclipse/mvp.md` | Documento fuente completo del MVP | Todas |
+| `https://open-meteo.com/en/docs` | API docs: variables, modelos, batching, params | C |
 
 ## Leyenda
 
@@ -62,11 +63,11 @@ Para cada sección se sigue un ciclo iterativo:
 
 | # | Punto | Estado | Notas |
 |---|-------|--------|-------|
-| C1 | Modelo(s) meteorológico(s) a utilizar (ICON, GFS, ECMWF, etc.) | ⬜ | — |
-| C2 | Variables exactas a consultar | ⬜ | mvp.md lista candidatas |
-| C3 | Estrategia de cache y refresco | ⬜ | mvp.md: "cache temporal" |
-| C4 | Manejo de errores y fallback entre modelos | ⬜ | — |
-| C5 | Rate limiting y batching de peticiones | ⬜ | — |
+| C1 | Modelo(s) meteorológico(s) a utilizar (ICON, GFS, ECMWF, etc.) | ✅ | best_match (principal) + icon_eu (secundario para confianza) |
+| C2 | Variables exactas a consultar | ✅ | cloud_cover, cloud_cover_low/mid/high, visibility |
+| C3 | Estrategia de cache y refresco | ✅ | En memoria, TTL 1h, key por coord+modelo |
+| C4 | Manejo de errores y fallback entre modelos | ✅ | Retry 1x, sin fallback, confianza=0.5 si falla secundario |
+| C5 | Rate limiting y batching de peticiones | ✅ | Batch 50 coords/llamada, ~14 HTTP por refresco, throttle 200ms |
 
 ## Sección D — Catálogo de puntos [simple]
 
@@ -139,7 +140,7 @@ Para cada sección se sigue un ciclo iterativo:
 |---------|-------|-----------|------------|--------|
 | A — Stack técnico | 6 | 6 | 0 | ✅ |
 | B — Scoring v1 | 8 | 8 | 0 | ✅ |
-| C — Meteorología | 5 | 0 | 5 | ⬜ |
+| C — Meteorología | 5 | 5 | 0 | ✅ |
 | D — Catálogo puntos | 4 | 0 | 4 | ⬜ |
 | E — Motor solar | 4 | 0 | 4 | ⬜ |
 | F — Elevación | 3 | 0 | 3 | ⬜ |
@@ -147,4 +148,4 @@ Para cada sección se sigue un ciclo iterativo:
 | H — Modos temporales | 4 | 0 | 4 | ⬜ |
 | I — Explicabilidad | 3 | 0 | 3 | ⬜ |
 | J — Deployment | 4 | 0 | 4 | ⬜ |
-| **Total** | **47** | **14** | **33** | — |
+| **Total** | **47** | **19** | **28** | — |
