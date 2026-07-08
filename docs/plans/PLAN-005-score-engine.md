@@ -3,7 +3,7 @@
 > Issue: [#5 — Score Engine: cálculo de puntuación con modelo híbrido](https://github.com/VictorMaderaA/EvaluadorEclipse/issues/5)
 > Análisis: [decisiones-analisis.md § B1-B7](docs/analysis/decisiones-analisis.md), [§ I1](docs/analysis/decisiones-analisis.md)
 > Dependencias: #2 (forecast) ✅ 69cc019, #3 (solar) ✅ 8c64e41, #4 (elevation) ✅ a2bb784
-> Estado: Pendiente de ejecución
+> Estado: ✅ Completado
 
 ---
 
@@ -11,10 +11,10 @@
 
 | Fase | Estado | Fecha | Commit |
 |------|--------|-------|--------|
-| 1 | ⏳ Pendiente | — | — |
-| 2 | ⏳ Pendiente | — | — |
-| 3 | ⏳ Pendiente | — | — |
-| 4 | ⏳ Pendiente | — | — |
+| 1 | ✅ Completada | 2026-07-08 | — |
+| 2 | ✅ Completada | 2026-07-08 | — |
+| 3 | ✅ Completada | 2026-07-08 | — |
+| 4 | ✅ Completada | 2026-07-08 | — |
 
 ---
 
