@@ -3,7 +3,7 @@
 > Issue: [#3 — Solar Engine: posición solar + cálculo de corredor direccional](https://github.com/VictorMaderaA/EvaluadorEclipse/issues/3)
 > Análisis: [decisiones-analisis.md § E1-E4](docs/analysis/decisiones-analisis.md), [§ B3-B4](docs/analysis/decisiones-analisis.md)
 > Dependencia: #1 (setup) — ✅ Completada (commit c62cadd)
-> Estado: Pendiente de ejecución
+> Estado: ✅ Completado
 
 ---
 
@@ -11,9 +11,9 @@
 
 | Fase | Estado | Fecha | Commit |
 |------|--------|-------|--------|
-| 1 | ⏳ Pendiente | — | — |
-| 2 | ⏳ Pendiente | — | — |
-| 3 | ⏳ Pendiente | — | — |
+| 1 | ✅ Completada | 2026-07-08 | — |
+| 2 | ✅ Completada | 2026-07-08 | — |
+| 3 | ✅ Completada | 2026-07-08 | — |
 
 ---
 
