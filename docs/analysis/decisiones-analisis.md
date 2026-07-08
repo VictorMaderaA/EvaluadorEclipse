@@ -115,3 +115,171 @@ src/
 - Investigación de rendimiento Leaflet vs MapLibre para visualización densa
 
 **Impacto:** `react-map-gl` + `maplibre-gl` como dependencias. Tiles gratuitas sin API key para el MVP. El grid heatmap se renderiza como capa GeoJSON `fill` con color-scale por score.
+
+---
+
+## B — Modelo de scoring v1
+
+### B1 — Fórmula base
+
+**Decisión:** Modelo híbrido — base aditiva ponderada con penalización multiplicativa cuando nubosidad total > 90%.
+
+**Motivo:** La base aditiva es explicable y permite mostrar desglose visual de componentes. El multiplicador de penalización evita el caso absurdo de buen score con cielo cubierto al 98%. Combina simplicidad con realismo.
+
+**Descartado:** Aditivo puro (no castiga suficiente nubosidad extrema), Multiplicativo puro (menos intuitivo para el usuario, difícil explicar desglose).
+
+**Referencia fuente:** mvp.md § Propuesta de scoring v1: "El scoring debe ser simple, explicable y fácil de recalibrar"
+
+**Fórmula:**
+```
+score_raw = w1·meteo + w2·capas + w3·corredor + w4·elevacion + w5·confianza
+penalty = cloud_cover_total > 90 ? (1 - (cloud_cover_total - 90) / 10) : 1.0
+score_final = score_raw × penalty
+```
+
+**Impacto:** `src/engines/score-engine.ts` — función principal de cálculo.
+
+---
+
+### B2 — Pesos iniciales
+
+**Decisión:** Distribución de pesos v1:
+
+| Componente | Peso |
+|---|---|
+| Nubosidad total del punto | 30% |
+| Nubosidad por capas (baja/media/alta) | 25% |
+| Corredor direccional | 25% |
+| Elevación/relieve | 10% |
+| Confianza del modelo | 10% |
+
+**Motivo:** Nubosidad total como señal dominante rápida. Capas y corredor equiparados porque ambos refinan la lectura de formas distintas. Elevación aporta pero no domina. Confianza subida a 10% (desde 5% del mvp.md) porque si la predicción es muy incierta, hay que reflejarlo.
+
+**Descartado:** Los pesos originales del mvp.md (35/25/25/10/5) — se ajustó ligeramente para dar más relevancia a confianza.
+
+**Referencia fuente:** mvp.md § Propuesta de scoring v1: tabla de pesos orientativos.
+
+**Impacto:** Valores iniciales en `ScoringConfig`. Ajustables sin redeploy.
+
+---
+
+### B3 — Corredor direccional
+
+**Decisión:** Corredor de 20 km desde el punto de observación, en línea recta hacia el azimut solar. 3 puntos de muestreo a 5, 10 y 20 km. Ponderación por proximidad: 70% / 20% / 10%.
+
+**Motivo:** 20 km cubre la distancia relevante de nubes bajas/medias que podrían obstruir la visión. 3 puntos son suficientes para v1 sin explotar las llamadas a la API. Más peso al punto cercano porque las nubes próximas obstruyen más.
+
+**Descartado:** Corredor más largo (30-50 km — añade complejidad sin certeza de mejora en v1), Abanico 2D (útil pero fase posterior), Ponderación uniforme (menos realista).
+
+**Referencia fuente:** mvp.md § Modelo conceptual: "Muestreo meteorológico en varios puntos del corredor alineado con el azimut solar"
+
+**Impacto:** 3 llamadas API adicionales por punto evaluado del catálogo. Grid heatmap NO usa corredor (reducir coste). `src/engines/solar-engine.ts` calcula coordenadas del corredor.
+
+---
+
+### B4 — Penalización por altitud solar baja
+
+**Decisión:** Multiplicador de penalización basado en altitud solar:
+- ≥ 30°: sin penalización (×1.0)
+- 10°–30°: penalización lineal (×0.7 a ×1.0)
+- 0°–10°: penalización fuerte (×0.5 a ×0.7)
+- < 0°: score = 0 (sol bajo horizonte)
+
+**Motivo:** Cuando el Sol está bajo, la línea de visión atraviesa más atmósfera y las nubes bajas tienen más efecto. El umbral de 30° es conservador. Los eclipses en España suelen tener altitudes solares moderadas, así que este factor será un ajuste fino, no un cambio drástico.
+
+**Descartado:** Sin penalización (ignora un factor físico real), Curva exponencial (más difícil de explicar).
+
+**Referencia fuente:** mvp.md § Modelo conceptual: "Penalización adicional cuando la altitud solar sea baja"
+
+**Impacto:** Multiplicador aplicado después del score aditivo, antes del penalty de nubosidad extrema.
+
+---
+
+### B5 — Normalización de componentes
+
+**Decisión:** Cálculo interno en rango 0–1 para cada componente. Presentación al usuario en escala 0–100 (entero redondeado).
+
+**Motivo:** 0–1 simplifica la aritmética de pesos y multiplicadores. 0–100 es intuitivo para el usuario ("este punto tiene 73 sobre 100").
+
+**Descartado:** 0–10 (menos granular), mantener 0–1 en UI (menos intuitivo).
+
+**Referencia fuente:** mvp.md § UX: "Score total" como elemento visible por punto.
+
+**Impacto:** Cada provider devuelve valores normalizados 0–1. La capa de presentación multiplica por 100.
+
+---
+
+### B6 — Confianza del modelo
+
+**Decisión:** Comparar forecast de 2 modelos meteorológicos (best_match + ICON-EU) para la misma coordenada y hora. Medir diferencia absoluta en `cloud_cover`. Si < 15% → confianza 1.0. Si > 40% → confianza 0.3. Interpolación lineal entre medias.
+
+**Motivo:** Ligero (2 llamadas vs N del ensemble completo), ya da información útil sobre la fiabilidad de la predicción. Si ambos modelos coinciden, la predicción es más robusta.
+
+**Descartado:** Ensemble completo (muchas más llamadas API, complejidad de procesamiento para MVP), Sin confianza (pierde información útil que es barata de obtener).
+
+**Referencia fuente:** mvp.md § Fuentes de datos: "variantes por modelo y ensemble mean", § Scoring: "Ajuste por confianza del modelo"
+
+**Impacto:** 2× llamadas API por punto (una por modelo). `src/providers/forecast-provider.ts` debe soportar consultar modelos específicos.
+
+---
+
+### B7 — Parametrización en runtime
+
+**Decisión:** Configuración tipada en TypeScript (`ScoringConfig`), exportada desde archivo dedicado. Incluye pesos, umbrales de penalización, y parámetros del corredor. Para v1, solo configurable editando el archivo. Panel UI de ajuste en fase posterior.
+
+**Interfaz:**
+```typescript
+interface ScoringConfig {
+  weights: {
+    cloudTotal: number
+    cloudLayers: number
+    corridor: number
+    elevation: number
+    confidence: number
+  }
+  penalties: {
+    highCloudThreshold: number    // default: 90
+    lowAltitudeThreshold: number  // default: 30
+    minAltitude: number           // default: 10
+  }
+  corridor: {
+    lengthKm: number             // default: 20
+    samplePoints: number         // default: 3
+    distanceWeights: number[]    // default: [0.7, 0.2, 0.1]
+  }
+}
+```
+
+**Motivo:** Permite iterar sobre calibrado sin tocar lógica de negocio. Tipo estricto previene errores.
+
+**Referencia fuente:** mvp.md § Scoring: "versión parametrizable y que el calibrado se haga con datos reales"
+
+**Impacto:** `src/config/scoring-config.ts`. Importado por score-engine.
+
+---
+
+### B8 — Grid para heatmap
+
+**Decisión:** Grid de 10 km × 10 km sobre la franja del eclipse (+ buffer). Score simplificado para el grid (sin corredor direccional). Los puntos del catálogo mantienen score completo con corredor. Dos capas visuales complementarias en el mapa.
+
+**Detalles:**
+- Resolución: 10 km × 10 km por celda
+- Área: franja del eclipse + buffer lateral (~800×200 km → ~160 celdas)
+- Evaluación: centroide de cada celda
+- Score grid: meteo + capas + elevación + confianza (sin corredor) → reduce llamadas API
+- Visualización: capa GeoJSON `fill` con color-scale en MapLibre
+- Interacción: click en celda muestra score + desglose
+
+**Motivo:** El corredor en cada celda del grid triplicaría las llamadas API (~480 extra). Sin corredor, el heatmap sigue siendo informativo como visión panorámica. Los puntos del catálogo (curados, ~20-50) sí justifican el coste del corredor.
+
+**Descartado:** Grid con corredor completo (coste API prohibitivo para refrescos frecuentes), Grid solo donde hay puntos del catálogo (pierde el valor de panorámica visual).
+
+**Referencia fuente:** Requisito del usuario durante análisis: "mapa de calor para un área... grid evaluado... click para ver score". mvp.md § UX: "Mapa general con puntos coloreados por score".
+
+**Impacto:** `src/engines/grid-engine.ts` (generación de celdas), reutiliza score-engine en modo simplificado. Capa adicional en map-view.
+
+---
+
+### Nota para secciones futuras
+
+Se registra para Sección G (UX): el usuario quiere además una **capa visual de nubosidad sobre mapa con relieve** (tipo radar meteorológico), toggleable, para ver las nubes que motivan el score. Registrado como G6. No es scoring, es visualización complementaria.
