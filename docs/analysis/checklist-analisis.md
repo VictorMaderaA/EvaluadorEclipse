@@ -17,10 +17,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | Dato | Valor |
 |------|-------|
-| Última sección completada | G (UX y vistas del MVP) |
-| Siguiente sección | H (Modos temporales) |
-| Commit más reciente | d39f61a docs(análisis): sección F completada |
-| Decisiones que condicionan secciones restantes | Layout split adaptativo, Tailwind+Recharts, click en mapa para evaluar+guardar, capa nubes post-MVP, ficha con desglose+timeline |
+| Última sección completada | H (Modos temporales) |
+| Siguiente sección | I (Explicabilidad y comunicación del score) |
+| Commit más reciente | ce31305 docs(análisis): sección G completada |
+| Decisiones que condicionan secciones restantes | Toggle 72h/eclipse con slider, ventana -60/+15 configurable, tendencia ▲▼= sin historial, config en localStorage+URL params |
 
 ### Archivos explorados
 
@@ -111,10 +111,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | # | Punto | Estado | Notas |
 |---|-------|--------|-------|
-| H1 | UX del cambio de modo: toggle, selector, detección automática | ⬜ | — |
-| H2 | Ventana de análisis en modo eclipse: configuración por defecto | ⬜ | mvp.md: "-60 min a +15 min" |
-| H3 | Comparativa entre actualizaciones del forecast | ⬜ | mvp.md: mencionado |
-| H4 | Persistencia de la fecha/hora fijada (localStorage, URL params) | ⬜ | — |
+| H1 | UX del cambio de modo: toggle, selector, detección automática | ✅ | Toggle explícito en header + slider temporal |
+| H2 | Ventana de análisis en modo eclipse: configuración por defecto | ✅ | -60min/+15min configurable, resolución horaria |
+| H3 | Comparativa entre actualizaciones del forecast | ✅ | Solo indicador de tendencia (▲▼=), sin historial completo |
+| H4 | Persistencia de la fecha/hora fijada (localStorage, URL params) | ✅ | localStorage + URL params para compartir |
 
 ## Sección I — Explicabilidad y comunicación del score [simple]
 
@@ -146,7 +146,7 @@ Para cada sección se sigue un ciclo iterativo:
 | E — Motor solar | 4 | 4 | 0 | ✅ |
 | F — Elevación | 3 | 3 | 0 | ✅ |
 | G — UX y vistas | 7 | 7 | 0 | ✅ |
-| H — Modos temporales | 4 | 0 | 4 | ⬜ |
+| H — Modos temporales | 4 | 4 | 0 | ✅ |
 | I — Explicabilidad | 3 | 0 | 3 | ⬜ |
 | J — Deployment | 4 | 0 | 4 | ⬜ |
-| **Total** | **48** | **37** | **11** | — |
+| **Total** | **48** | **41** | **7** | — |

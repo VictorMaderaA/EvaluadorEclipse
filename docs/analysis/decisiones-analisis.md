@@ -736,3 +736,92 @@ Peso en el score total: 10% (según B2).
 **Referencia fuente:** Requisito del usuario: "poder hacer click sobre un punto para evaluarlo aunque no esté en los registrados... incluir botón para agregar a los del localStorage"
 
 **Impacto:** Handler `onClick` en MapLibre con coordenadas. Popup temporal con evaluación. Integración con `points-store.ts` para el guardado.
+
+---
+
+## H — Modos temporales (72h vs eclipse)
+
+### H1 — UX del cambio de modo
+
+**Decisión:** Toggle explícito en la barra superior con dos estados:
+- **"Próximas 72h"** (default): evolución del ranking hora a hora para 3 días
+- **"Modo Eclipse"**: panel de configuración de fecha/hora/ventana del evento
+
+Complementado con un slider temporal:
+- En modo 72h: slider cubre las 72 horas desde ahora
+- En modo eclipse: slider cubre la ventana configurada (-60min a +15min)
+
+**Motivo:** Claro e intencional. El usuario sabe siempre en qué modo está. El slider temporal permite navegar por las horas y ver cómo cambia el ranking en cada instante.
+
+**Descartado:** Detección automática (confuso si no se explica), tabs rígidas (el slider temporal es más versátil que dos pestañas fijas).
+
+**Referencia fuente:** mvp.md § UX: "Selector temporal con modos 'próximas 72 horas' y 'fecha/hora fija'"
+
+**Impacto:** Componente `ModeSelector` en header. Estado global de modo que condiciona qué datos se consultan.
+
+---
+
+### H2 — Ventana de análisis en modo eclipse
+
+**Decisión:** Configuración almacenada con defaults:
+- Hora central del eclipse (configurable)
+- Ventana: -60 minutos antes, +15 minutos después (configurable)
+- Resolución: horaria (la que da Open-Meteo por defecto)
+
+**Cálculo:**
+1. Instante central → azimut/altitud solar exactos para scoring
+2. Forecast consultado para las horas dentro de la ventana
+3. Score principal = evaluación del instante central
+4. Timeline = evolución dentro de la ventana
+
+**Parámetros API:**
+- `start_date` y `end_date` para acotar la consulta (no pedir 7 días si solo importa 1 ventana de 75min)
+- O `forecast_hours` si es más preciso
+
+**Motivo:** La ventana -60/+15 cubre el antes del eclipse (preparación, primera evaluación) y un poco después (por si el usuario quiere ver si mejora post-evento). Configurable porque cada eclipse tiene duración diferente.
+
+**Referencia fuente:** mvp.md § Modo eclipse: "Definir una ventana de análisis, por ejemplo desde 60 minutos antes hasta 15 minutos después"
+
+**Impacto:** `src/config/eclipse-config.ts`. Integración con forecast-provider para acotar la consulta temporal.
+
+---
+
+### H3 — Comparativa entre actualizaciones del forecast
+
+**Decisión:** Solo indicador de tendencia para el MVP:
+- Al refrescar datos, comparar score nuevo vs último score conocido (guardado en localStorage con timestamp)
+- Mostrar ▲ +N / ▼ -N / = en la ficha del punto y en el ranking
+- No almacenar historial completo de actualizaciones de forecast
+
+**Motivo:** El indicador de tendencia da el 80% del valor (¿mejoró o empeoró?) con mínima complejidad. El historial completo requiere almacenar múltiples runs con timestamp → complejidad de storage y UI de comparación que no aporta suficiente para v1.
+
+**Descartado:** Historial completo de forecast runs (fase posterior), diff visual entre días (requiere UI de comparación que es compleja para MVP).
+
+**Referencia fuente:** mvp.md § Modo eclipse: "Comparar cómo cambia el ranking entre distintas actualizaciones del forecast"
+
+**Almacenamiento:** `localStorage['eclipse-last-scores']` = `{ [pointId]: { score: number, timestamp: string } }`
+
+**Impacto:** Lógica de comparación en `score-engine.ts` al producir resultados. UI muestra delta en ranking y ficha.
+
+---
+
+### H4 — Persistencia de la fecha/hora fijada
+
+**Decisión:** Configuración del modo eclipse en localStorage:
+```typescript
+interface EclipseConfig {
+  date: string          // 'YYYY-MM-DD'
+  time: string          // 'HH:mm'
+  windowBefore: number  // minutos (default 60)
+  windowAfter: number   // minutos (default 15)
+}
+```
+Key: `eclipse-config`. Persiste entre sesiones.
+
+Adicionalmente, soporte para parámetro URL: `?mode=eclipse&date=2027-08-02&time=10:30` para compartir configuración. Si hay URL param, tiene prioridad sobre localStorage.
+
+**Motivo:** El usuario configura una vez y al volver ya está lista. La URL permite compartir el setup con otro usuario sin que tenga que configurar manualmente.
+
+**Referencia fuente:** mvp.md § Modo eclipse: "Fijar manualmente la fecha y hora objetivo"
+
+**Impacto:** `src/config/eclipse-config.ts` con lectura URL params → localStorage → defaults. Componente de configuración en el panel de modo eclipse.
