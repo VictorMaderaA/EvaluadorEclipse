@@ -3,7 +3,7 @@
 > Issue: [#7 — Grid Engine: generación de celdas y score simplificado para heatmap](https://github.com/VictorMaderaA/EvaluadorEclipse/issues/7)
 > Análisis: [decisiones-analisis.md § B8](docs/analysis/decisiones-analisis.md)
 > Dependencias: #5 (score engine) ✅ 81b695d, #2 (forecast provider) ✅ 69cc019
-> Estado: Pendiente de ejecución
+> Estado: ✅ Completado
 
 ---
 
@@ -11,9 +11,9 @@
 
 | Fase | Estado | Fecha | Commit |
 |------|--------|-------|--------|
-| 1 | ⏳ Pendiente | — | — |
-| 2 | ⏳ Pendiente | — | — |
-| 3 | ⏳ Pendiente | — | — |
+| 1 | ✅ Completada | 2026-07-08 | — |
+| 2 | ✅ Completada | 2026-07-08 | — |
+| 3 | ✅ Completada | 2026-07-08 | — |
 
 ---
 
