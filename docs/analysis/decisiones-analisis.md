@@ -2,6 +2,7 @@
 
 > Última actualización: 2026-07-08
 > Input para: plan-expander
+> Estado: ✅ Análisis completo (48/48 decisiones)
 
 ---
 
@@ -996,3 +997,65 @@ EXPOSE 80
 **Descartado:** Sentry, Grafana, Prometheus (overkill para MVP personal/grupo reducido).
 
 **Impacto:** Solo el `--restart unless-stopped` en el script de deploy.
+
+---
+
+## Revisión cruzada
+
+### Coherencia verificada
+
+1. **Flujo de datos end-to-end:** Puntos → SunCalc → Corredor → Open-Meteo (batch) → Score Engine → Explanation → UI. Sin saltos ni dependencias circulares.
+
+2. **localStorage sin colisiones:** 5 keys con prefijo `eclipse-` (custom-points, config, last-scores, api-keys, forecast-cache-*). Sin solapamiento.
+
+3. **Volumen de API:** ~26 llamadas HTTP por refresco completo (catálogo + grid). Viable con throttle 200ms (~5s). Cache reduce refrescos parciales.
+
+4. **Grid sin corredor pero con confianza:** Coherente. El grid usa 4 de 5 componentes (75% del peso): meteo + capas + elevación + confianza. Solo omite corredor (que triplicaría coords). Ambos modelos se consultan igualmente para el grid.
+
+5. **Nginx SPA routing:** `try_files $uri $uri/ /index.html` necesario para React Router. Contemplado en Dockerfile/nginx.conf.
+
+6. **Dependencias mínimas:** react, react-map-gl, maplibre-gl, suncalc, recharts + tailwindcss/vite/typescript. Sin librerías innecesarias.
+
+### Inconsistencias detectadas y resueltas
+
+Ninguna inconsistencia detectada entre las 48 decisiones.
+
+---
+
+## Próximos pasos
+
+> Este documento es input para `plan-expander`
+
+### Prerrequisitos externos (bloqueantes)
+
+- **Confirmar franja del eclipse:** Necesaria para definir el catálogo base de puntos y el área del grid. Sin esto se puede desarrollar toda la lógica pero no calibrar los puntos reales.
+
+### Fases de implementación propuestas (alto nivel)
+
+| Fase | Contenido | Dependencias |
+|------|-----------|--------------|
+| 0 | Setup proyecto (Vite+React+TS+Tailwind+MapLibre) + estructura de carpetas + Dockerfile | Ninguna |
+| 1 | Score Engine + Solar Engine + Forecast Provider + Elevation Provider | Fase 0 |
+| 2 | Grid Engine (generación de celdas + score simplificado) | Fase 1 |
+| 3 | Map View (MapLibre + heatmap grid + marcadores puntos) | Fases 1, 2 |
+| 4 | Sidebar: Ranking + Ficha de punto + Explicabilidad | Fases 1, 3 |
+| 5 | Modos temporales (72h + eclipse) + slider + config | Fases 1, 4 |
+| 6 | Click-to-evaluate + guardar punto custom | Fases 3, 4 |
+| 7 | Tendencia + cache localStorage + polish UI | Fases 4, 5 |
+| 8 | Catálogo base de puntos (requiere franja confirmada) | Fase 1 |
+| 9 | Deploy: Dockerfile + nginx.conf + deploy.sh | Fase 7 |
+
+### Tracks paralelos posibles
+
+- **Track A (engine):** Fases 0 → 1 → 2 (puro cálculo, sin UI)
+- **Track B (UI):** Fases 0 → 3 → 4 (visualización con datos mock)
+- **Convergencia:** Fase 5+ integra ambos tracks
+
+### Mejoras post-MVP registradas
+
+- G6: Capa visual de nubosidad sobre mapa con relieve (toggle score/nubes)
+- F3: Análisis de horizonte orográfico automático
+- H3: Historial completo de actualizaciones de forecast
+- B3: Abanico 2D para el corredor (en vez de línea recta)
+- B7: Panel UI para ajustar pesos en runtime
+- Resolución 15-minutely si ICON-D2 cubre la zona
