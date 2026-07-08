@@ -1,11 +1,15 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { MapView } from './views/MapView'
 import { Sidebar } from './views/Sidebar'
 import { RankingList } from './components/RankingList'
 import { PointDetail } from './components/PointDetail'
+import { ModeSelector } from './components/ModeSelector'
+import { TimeSlider } from './components/TimeSlider'
 import type { PointWithScore } from './views/MapView'
 import { generateGrid, gridToGeoJSON, evaluateGrid } from './engines/grid-engine'
 import { getAllPoints, addCustomPoint } from './data/points-store'
+import { loadEclipseConfig, saveEclipseConfig } from './config/eclipse-config'
+import type { EclipseConfig } from './config/eclipse-config'
 import type { ForecastData, ScoreResult } from './config/types'
 
 // Mock forecast for demo purposes
@@ -20,6 +24,13 @@ const mockForecast: ForecastData = {
 
 function App() {
   const [selectedPointId, setSelectedPointId] = useState<string | null>(null)
+  const [config, setConfig] = useState<EclipseConfig>(loadEclipseConfig)
+  const [selectedTime, setSelectedTime] = useState<Date>(new Date())
+
+  // Persist config changes
+  useEffect(() => {
+    saveEclipseConfig(config)
+  }, [config])
 
   // Generate mock grid data
   const gridGeoJSON = useMemo(() => {
@@ -90,32 +101,50 @@ function App() {
   }, [])
 
   return (
-    <div className="h-screen w-screen">
-      <Sidebar>
-        {selectedPoint ? (
-          <PointDetail
-            point={selectedPoint.point}
-            score={selectedScoreResult}
-            solarPosition={{ altitudeDeg: 45, azimuthNorthDeg: 180 }}
-            forecast={mockForecast}
-            onBack={() => setSelectedPointId(null)}
-          />
-        ) : (
-          <RankingList
+    <div className="h-screen w-screen flex flex-col">
+      {/* Header */}
+      <header className="h-14 bg-white border-b border-gray-200 flex items-center px-4 z-20 shrink-0">
+        <ModeSelector config={config} onConfigChange={setConfig} />
+      </header>
+
+      {/* Main content */}
+      <div className="flex-1 flex relative overflow-hidden">
+        <Sidebar>
+          {selectedPoint ? (
+            <PointDetail
+              point={selectedPoint.point}
+              score={selectedScoreResult}
+              solarPosition={{ altitudeDeg: 45, azimuthNorthDeg: 180 }}
+              forecast={mockForecast}
+              onBack={() => setSelectedPointId(null)}
+            />
+          ) : (
+            <RankingList
+              points={points}
+              selectedPointId={selectedPointId}
+              onSelectPoint={setSelectedPointId}
+            />
+          )}
+        </Sidebar>
+
+        <div className="flex-1 lg:ml-[350px] relative">
+          <MapView
+            gridGeoJSON={gridGeoJSON}
             points={points}
-            selectedPointId={selectedPointId}
-            onSelectPoint={setSelectedPointId}
+            onPointSelect={setSelectedPointId}
+            onEvaluatePoint={handleEvaluatePoint}
+            onSavePoint={handleSavePoint}
           />
-        )}
-      </Sidebar>
-      <div className="h-screen lg:ml-[350px]">
-        <MapView
-          gridGeoJSON={gridGeoJSON}
-          points={points}
-          onPointSelect={setSelectedPointId}
-          onEvaluatePoint={handleEvaluatePoint}
-          onSavePoint={handleSavePoint}
-        />
+
+          {/* Time slider overlay */}
+          <div className="absolute bottom-4 left-4 right-4 z-10">
+            <TimeSlider
+              config={config}
+              selectedTime={selectedTime}
+              onTimeChange={setSelectedTime}
+            />
+          </div>
+        </div>
       </div>
     </div>
   )

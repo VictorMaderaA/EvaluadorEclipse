@@ -3,7 +3,7 @@
 > Issue: [#10 — Modos temporales: toggle 72h/eclipse + slider + config persistente](https://github.com/VictorMaderaA/EvaluadorEclipse/issues/10)
 > Análisis: [decisiones-analisis.md § H1-H4](docs/analysis/decisiones-analisis.md)
 > Dependencias: #5 (score) ✅, #8 (map) ✅ 836120f, #9 (sidebar) ✅ cf8886d
-> Estado: Pendiente de ejecución
+> Estado: ✅ Completado
 
 ---
 
@@ -11,10 +11,10 @@
 
 | Fase | Estado | Fecha | Commit |
 |------|--------|-------|--------|
-| 1 | ⏳ Pendiente | — | — |
-| 2 | ⏳ Pendiente | — | — |
-| 3 | ⏳ Pendiente | — | — |
-| 4 | ⏳ Pendiente | — | — |
+| 1 | ✅ Completada | 2026-07-08 | — |
+| 2 | ✅ Completada | 2026-07-08 | — |
+| 3 | ✅ Completada | 2026-07-08 | — |
+| 4 | ✅ Completada | 2026-07-08 | — |
 
 ---
 

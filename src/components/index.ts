@@ -1,4 +1,6 @@
 export { PointCard } from './PointCard'
 export { PointDetail } from './PointDetail'
 export { RankingList } from './RankingList'
+export { ModeSelector } from './ModeSelector'
+export { TimeSlider } from './TimeSlider'
 export { scoreToColor, azimuthToCardinal } from './utils'
