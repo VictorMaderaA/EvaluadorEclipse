@@ -380,3 +380,89 @@ hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility
 **Referencia fuente:** Documentación API Open-Meteo: "Multiple coordinates can be comma separated"
 
 **Impacto:** `src/providers/forecast-provider.ts` — función de batching que agrupa coords y distribuye en llamadas.
+
+---
+
+## D — Catálogo de puntos
+
+### D1 — Formato del catálogo
+
+**Decisión:** JSON en `/src/data/points-catalog.json` con interface TypeScript para validación en build-time. Adicionalmente, puntos custom del usuario se almacenan en localStorage y se fusionan con el catálogo base en runtime.
+
+**Motivo:** JSON es versionable en git, importable directamente por Vite sin parser extra. La capa de localStorage permite al usuario añadir puntos propios sin tocar código ni redeploy.
+
+**Descartado:** YAML (añade dependencia de parser), base de datos (overkill sin backend), solo localStorage (se pierde el catálogo curado base).
+
+**Referencia fuente:** mvp.md § Alcance funcional: "Cargar una lista de puntos candidatos en España", § Arquitectura: "Dataset versionado de puntos candidatos en JSON o similar"
+
+**Flujo de fusión:**
+1. En build: catálogo base importado como JSON estático
+2. En runtime: leer `localStorage['eclipse-custom-points']`
+3. Merge: catálogo base + puntos custom → lista completa para scoring
+4. Los puntos custom tienen un flag `source: 'custom'` para diferenciarlos visualmente
+
+**Impacto:** `src/data/points-catalog.json` (base), `src/data/points-store.ts` (merge + CRUD localStorage).
+
+---
+
+### D2 — Campos por punto
+
+**Decisión:** Interface TypeScript con campos obligatorios y opcionales:
+
+```typescript
+interface ObservationPoint {
+  id: string                    // Identificador único (slug o UUID para custom)
+  name: string                  // Nombre legible
+  region: string                // Región/provincia
+  coordinates: {
+    lat: number                 // WGS84
+    lon: number
+  }
+  elevation: number             // Metros sobre nivel del mar
+  source: 'catalog' | 'custom' // Origen del punto
+  metadata?: {
+    access?: string             // Descripción de acceso
+    difficulty?: 'easy' | 'moderate' | 'hard'
+    parking?: boolean           // ¿Hay aparcamiento cercano?
+    notes?: string              // Notas libres
+  }
+  tags?: string[]               // Etiquetas opcionales
+}
+```
+
+**Motivo:** Campos mínimos (id, name, region, coordinates, elevation, source) son obligatorios para que el scoring funcione. Metadata es opcional → permite añadir puntos rápido (solo nombre + coords) sin rellenar todo.
+
+**Referencia fuente:** mvp.md § Alcance funcional: "nombre, coordenadas, elevación base, notas logísticas y etiqueta de región"
+
+**Impacto:** Todos los módulos que consumen puntos (score-engine, map-view, ranking) usan esta interface.
+
+---
+
+### D3 — Criterios de selección y regiones
+
+**Decisión:** Criterios para el catálogo base curado:
+1. Dentro o cerca de la franja del eclipse
+2. Elevación preferente >800m (reduce probabilidad de nubes bajas)
+3. Horizonte despejado conocido (miradores, cumbres, altiplanos)
+4. Accesibilidad razonable (coche o caminata corta)
+5. Diversidad geográfica (distribuidos, no todos en la misma zona)
+
+Regiones candidatas: Sistema Central, Meseta norte, Aragón/Sistema Ibérico, Pirineos, costa mediterránea norte. Selección concreta pendiente de confirmar franja real del eclipse.
+
+**Motivo:** Estos criterios maximizan la utilidad del ranking: puntos diversos donde el score realmente discrimine. La selección final se hará cuando se conozca la geometría del eclipse.
+
+**Referencia fuente:** mvp.md § Enfoque geográfico: "Definir puntos candidatos curados manualmente, con preferencia por lugares altos o con horizonte despejado"
+
+**Impacto:** Tarea de curación manual antes de fase de implementación. JSON editable post-deploy sin problema.
+
+---
+
+### D4 — Cantidad objetivo
+
+**Decisión:** 20-30 puntos en el catálogo base. Sin límite para puntos custom del usuario.
+
+**Motivo:** 30 puntos × 4 coords (con corredor) = 120 coords → 3 batches API, manejable. Suficientes para ranking interesante. No tantos como para abrumar la UI. Puntos custom sin límite porque el usuario decide cuánto quiere explorar.
+
+**Referencia fuente:** mvp.md § Alcance: "conjunto de puntos definidos de antemano" (base) + requisito del usuario de poder añadir más (custom).
+
+**Impacto:** Si el usuario añade muchos puntos custom (>50 totales), el refresco tardará más. Aceptable para MVP — se puede paginar las llamadas o mostrar warning si hay demasiados.

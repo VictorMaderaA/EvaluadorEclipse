@@ -17,10 +17,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | Dato | Valor |
 |------|-------|
-| Última sección completada | C (Integración meteorológica) |
-| Siguiente sección | D (Catálogo de puntos) |
-| Commit más reciente | 1eb704f docs(análisis): sección B completada |
-| Decisiones que condicionan secciones restantes | TypeScript+React+Vite+MapLibre, SPA pura, API keys en localStorage, Score híbrido, corredor 20km 3 puntos, grid 10km sin corredor, 2 modelos (best_match+icon_eu), batch 50 coords, cache 1h |
+| Última sección completada | D (Catálogo de puntos) |
+| Siguiente sección | E (Motor solar y corredor direccional) |
+| Commit más reciente | 8d2dbfa docs(análisis): sección C completada |
+| Decisiones que condicionan secciones restantes | TypeScript+React+Vite+MapLibre, SPA pura, API keys en localStorage, Score híbrido, corredor 20km 3 puntos, grid 10km sin corredor, 2 modelos (best_match+icon_eu), batch 50 coords, cache 1h, puntos en JSON+localStorage |
 
 ### Archivos explorados
 
@@ -73,10 +73,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | # | Punto | Estado | Notas |
 |---|-------|--------|-------|
-| D1 | Formato del catálogo (JSON, YAML, otro) | ⬜ | mvp.md: "JSON o similar" |
-| D2 | Campos obligatorios y opcionales por punto | ⬜ | mvp.md lista varios |
-| D3 | Puntos iniciales: criterios de selección y regiones | ⬜ | mvp.md: "regiones relevantes para el eclipse" |
-| D4 | Cantidad objetivo de puntos para el MVP | ⬜ | — |
+| D1 | Formato del catálogo (JSON, YAML, otro) | ✅ | JSON base + puntos custom en localStorage, merge en runtime |
+| D2 | Campos obligatorios y opcionales por punto | ✅ | id, name, region, coords, elevation, source + metadata/tags opcionales |
+| D3 | Puntos iniciales: criterios de selección y regiones | ✅ | Elevación >800m, horizonte despejado, diversidad geográfica, franja eclipse |
+| D4 | Cantidad objetivo de puntos para el MVP | ✅ | 20-30 base, sin límite para custom |
 
 ## Sección E — Motor solar y corredor direccional [media]
 
@@ -141,11 +141,11 @@ Para cada sección se sigue un ciclo iterativo:
 | A — Stack técnico | 6 | 6 | 0 | ✅ |
 | B — Scoring v1 | 8 | 8 | 0 | ✅ |
 | C — Meteorología | 5 | 5 | 0 | ✅ |
-| D — Catálogo puntos | 4 | 0 | 4 | ⬜ |
+| D — Catálogo puntos | 4 | 4 | 0 | ✅ |
 | E — Motor solar | 4 | 0 | 4 | ⬜ |
 | F — Elevación | 3 | 0 | 3 | ⬜ |
 | G — UX y vistas | 6 | 0 | 6 | ⬜ |
 | H — Modos temporales | 4 | 0 | 4 | ⬜ |
 | I — Explicabilidad | 3 | 0 | 3 | ⬜ |
 | J — Deployment | 4 | 0 | 4 | ⬜ |
-| **Total** | **47** | **19** | **28** | — |
+| **Total** | **47** | **23** | **24** | — |
