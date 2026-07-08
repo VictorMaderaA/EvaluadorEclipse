@@ -334,15 +334,22 @@ hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility
 
 ### C3 — Estrategia de cache y refresco
 
-**Decisión:** Cache en memoria (Map JS) con TTL de 1 hora. Key: `${lat},${lon},${model}`. Al recargar página se obtiene forecast fresco.
+**Decisión:** Cache de dos niveles:
+1. **Nivel 1 — Memoria (Map JS):** TTL 1 hora. Evita repetir llamadas mientras el usuario navega entre vistas en la misma sesión.
+2. **Nivel 2 — localStorage:** TTL 5 minutos. Evita repetir llamadas si el usuario recarga la página o abre nueva pestaña en un intervalo corto.
 
-**Motivo:** Los modelos se actualizan cada 1-6h → TTL de 1h garantiza datos razonablemente frescos sin redundar llamadas durante uso normal de la sesión. Sin complejidad de serialización a localStorage. En una sesión típica (<1h), el usuario navega entre vistas sin repetir peticiones.
+Key en ambos: `${lat},${lon},${model},${forecastDays}`.
 
-**Descartado:** localStorage con TTL (complejidad de serialización, datos potencialmente stale entre sesiones), sin cache (demasiadas llamadas al cambiar entre vistas).
+Flujo de lectura: memoria → localStorage (si no expirado) → API.
+Flujo de escritura: al obtener de API → guardar en memoria + localStorage con timestamp.
 
-**Referencia fuente:** mvp.md § Arquitectura: "Cache temporal en memoria o estrategia de refresco simple para evitar llamadas redundantes"
+**Motivo:** La cache en memoria (1h) cubre la navegación normal. La cache en localStorage (5min) evita el caso molesto de recargar página y que se re-hagan todas las peticiones idénticas inmediatamente. 5 minutos es suficientemente corto para no servir datos stale pero suficiente para cubrir recargas rápidas.
 
-**Impacto:** `src/providers/forecast-cache.ts` — Map con TTL check en cada acceso.
+**Descartado:** Solo memoria (se pierde al recargar, innecesarias llamadas repetidas), localStorage con TTL largo (datos stale), sin cache (demasiadas llamadas).
+
+**Referencia fuente:** mvp.md § Arquitectura: "Cache temporal en memoria o estrategia de refresco simple". Refinado por el usuario: persistencia corta para evitar re-peticiones tras recarga.
+
+**Impacto:** `src/providers/forecast-cache.ts` — dos capas, la de localStorage serializa/deserializa JSON con campo `fetchedAt`.
 
 ---
 
@@ -466,3 +473,92 @@ Regiones candidatas: Sistema Central, Meseta norte, Aragón/Sistema Ibérico, Pi
 **Referencia fuente:** mvp.md § Alcance: "conjunto de puntos definidos de antemano" (base) + requisito del usuario de poder añadir más (custom).
 
 **Impacto:** Si el usuario añade muchos puntos custom (>50 totales), el refresco tardará más. Aceptable para MVP — se puede paginar las llamadas o mostrar warning si hay demasiados.
+
+---
+
+## E — Motor solar y corredor direccional
+
+### E1 — Librería solar
+
+**Decisión:** SunCalc (`suncalc` + `@types/suncalc`). Usar `SunCalc.getPosition(date, lat, lon)` que devuelve `{ altitude, azimuth }` en radianes.
+
+**Motivo:** Librería madura (2013), tiny (~3KB), hace exactamente lo necesario sin overhead. Muy usada (>3M descargas/semana). Tipos disponibles vía DefinitelyTyped.
+
+**Conversión necesaria:**
+- Altitude: `altitudeDeg = altitude * 180 / Math.PI`
+- Azimuth (SunCalc mide desde sur, positivo al oeste): `azimuthNorth = (azimuth * 180 / Math.PI + 180) % 360`
+
+**Descartado:** suncalc3 (más pesada, API diferente, menos popular), cálculo manual (reinventar la rueda con riesgo de bugs).
+
+**Referencia fuente:** mvp.md § Fuentes de datos: "SunCalc es una librería pequeña y suficiente para calcular altitud y azimut solar"
+
+**Impacto:** `src/engines/solar-engine.ts` — función `getSolarPosition(date, lat, lon)` que devuelve `{ altitudeDeg, azimuthNorthDeg }`.
+
+---
+
+### E2 — Definición geométrica del corredor
+
+**Decisión:** Proyectar 3 puntos en línea recta desde el observador en dirección al azimut solar, usando fórmula de destino geodésico (trigonometría esférica). Distancias: 5, 10, 20 km.
+
+**Implementación:**
+```typescript
+function getCorridorPoints(lat: number, lon: number, azimuthDeg: number): [number, number][] {
+  const distances = [5, 10, 20] // km
+  return distances.map(d => destinationPoint(lat, lon, d, azimuthDeg))
+}
+
+function destinationPoint(lat: number, lon: number, distKm: number, bearingDeg: number): [number, number] {
+  const R = 6371
+  const d = distKm / R
+  const brng = bearingDeg * Math.PI / 180
+  const lat1 = lat * Math.PI / 180
+  const lon1 = lon * Math.PI / 180
+  const lat2 = Math.asin(Math.sin(lat1) * Math.cos(d) + Math.cos(lat1) * Math.sin(d) * Math.cos(brng))
+  const lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(d) * Math.cos(lat1), Math.cos(d) - Math.sin(lat1) * Math.sin(lat2))
+  return [lat2 * 180 / Math.PI, lon2 * 180 / Math.PI]
+}
+```
+
+**Motivo:** Trigonometría esférica es precisa a estas distancias (5-20 km, error <1m). No necesita dependencia de geodesia (turf.js, etc.).
+
+**Descartado:** Proyección plana (error crece con latitud), turf.js (dependencia pesada para una sola función), abanico 2D (fase posterior).
+
+**Referencia fuente:** mvp.md § Modelo conceptual: "Muestreo meteorológico en varios puntos del corredor alineado con el azimut solar"
+
+**Impacto:** `src/engines/solar-engine.ts` — función `getCorridorPoints()`. Output alimenta al forecast-provider para batching.
+
+---
+
+### E3 — Resolución del muestreo meteorológico en el corredor
+
+**Decisión:** Cada punto del corredor se consulta directamente a Open-Meteo como coordenada independiente (se incluye en el batch de C5). No hay interpolación entre puntos.
+
+**Cálculo del componente corredor:**
+```typescript
+corridor_score = cloud_at_5km * 0.70 + cloud_at_10km * 0.20 + cloud_at_20km * 0.10
+corridor_component = 1 - (corridor_score / 100)  // invertir: menos nubes = mejor score
+```
+
+**Motivo:** Consulta directa es más precisa que interpolar. El coste extra es manejable (3 coords por punto → ya incluido en estimación de C5: ~120 coords catálogo en 3 batches).
+
+**Descartado:** Interpolación entre puntos del grid (pierde precisión), consulta con mayor densidad (>3 puntos innecesario para v1).
+
+**Impacto:** El forecast-provider recibe las coordenadas del corredor como parte del lote general. El score-engine calcula el componente corredor con los pesos definidos en B3.
+
+---
+
+### E4 — Comportamiento cuando altitud solar < 0°
+
+**Decisión:**
+- Si altitud solar < 0° → score = 0 para ese punto/instante. No se evalúa meteorología.
+- En UI: mostrar indicador "Sol bajo horizonte" en vez de score numérico.
+- En modo 72h: solo evaluar horas con altitud > 0° (descartar noche).
+- En modo eclipse: evaluar siempre la hora fijada (el eclipse ocurre de día por definición, pero validar igualmente por robustez).
+
+**Motivo:** No tiene sentido evaluar condiciones de observación cuando el Sol no es visible. Ahorra llamadas API innecesarias para horas nocturnas.
+
+**Descartado:** Evaluar todas las horas y mostrar score=0 (desperdicio de API y confuso en UI).
+
+**Referencia fuente:** mvp.md § Modelo conceptual: "penalización adicional cuando la altitud solar sea baja" — extendido lógicamente a "no evaluar si es negativa".
+
+**Impacto:** Filtro previo al scoring en `score-engine.ts`. Timeline en UI solo muestra horas diurnas.

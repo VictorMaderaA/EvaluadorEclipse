@@ -17,10 +17,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | Dato | Valor |
 |------|-------|
-| Última sección completada | D (Catálogo de puntos) |
-| Siguiente sección | E (Motor solar y corredor direccional) |
-| Commit más reciente | 8d2dbfa docs(análisis): sección C completada |
-| Decisiones que condicionan secciones restantes | TypeScript+React+Vite+MapLibre, SPA pura, API keys en localStorage, Score híbrido, corredor 20km 3 puntos, grid 10km sin corredor, 2 modelos (best_match+icon_eu), batch 50 coords, cache 1h, puntos en JSON+localStorage |
+| Última sección completada | E (Motor solar y corredor direccional) |
+| Siguiente sección | F (Elevación y relieve) |
+| Commit más reciente | d1af441 docs(análisis): sección D completada |
+| Decisiones que condicionan secciones restantes | TypeScript+React+Vite+MapLibre, SPA pura, SunCalc para posición solar, corredor 3 puntos geodésicos, cache 2 niveles (mem 1h + localStorage 5min), grid sin corredor |
 
 ### Archivos explorados
 
@@ -65,7 +65,7 @@ Para cada sección se sigue un ciclo iterativo:
 |---|-------|--------|-------|
 | C1 | Modelo(s) meteorológico(s) a utilizar (ICON, GFS, ECMWF, etc.) | ✅ | best_match (principal) + icon_eu (secundario para confianza) |
 | C2 | Variables exactas a consultar | ✅ | cloud_cover, cloud_cover_low/mid/high, visibility |
-| C3 | Estrategia de cache y refresco | ✅ | En memoria, TTL 1h, key por coord+modelo |
+| C3 | Estrategia de cache y refresco | ✅ | 2 niveles: memoria TTL 1h + localStorage TTL 5min |
 | C4 | Manejo de errores y fallback entre modelos | ✅ | Retry 1x, sin fallback, confianza=0.5 si falla secundario |
 | C5 | Rate limiting y batching de peticiones | ✅ | Batch 50 coords/llamada, ~14 HTTP por refresco, throttle 200ms |
 
@@ -82,10 +82,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | # | Punto | Estado | Notas |
 |---|-------|--------|-------|
-| E1 | Librería solar: SunCalc vs alternativas | ⬜ | mvp.md recomienda SunCalc |
-| E2 | Definición geométrica del corredor (longitud km, ancho, nº puntos) | ⬜ | — |
-| E3 | Resolución del muestreo meteorológico en el corredor | ⬜ | — |
-| E4 | Comportamiento cuando altitud solar < 0 (pre-amanecer / post-atardecer) | ⬜ | — |
+| E1 | Librería solar: SunCalc vs alternativas | ✅ | SunCalc (mourner/suncalc) + @types/suncalc |
+| E2 | Definición geométrica del corredor (longitud km, ancho, nº puntos) | ✅ | Fórmula destino geodésico, 3 puntos a 5/10/20km en azimut solar |
+| E3 | Resolución del muestreo meteorológico en el corredor | ✅ | Consulta directa por coord, score ponderado 70/20/10 |
+| E4 | Comportamiento cuando altitud solar < 0 (pre-amanecer / post-atardecer) | ✅ | Score=0, indicador UI, no evaluar horas nocturnas en 72h |
 
 ## Sección F — Elevación y relieve [simple]
 
@@ -142,10 +142,10 @@ Para cada sección se sigue un ciclo iterativo:
 | B — Scoring v1 | 8 | 8 | 0 | ✅ |
 | C — Meteorología | 5 | 5 | 0 | ✅ |
 | D — Catálogo puntos | 4 | 4 | 0 | ✅ |
-| E — Motor solar | 4 | 0 | 4 | ⬜ |
+| E — Motor solar | 4 | 4 | 0 | ✅ |
 | F — Elevación | 3 | 0 | 3 | ⬜ |
 | G — UX y vistas | 6 | 0 | 6 | ⬜ |
 | H — Modos temporales | 4 | 0 | 4 | ⬜ |
 | I — Explicabilidad | 3 | 0 | 3 | ⬜ |
 | J — Deployment | 4 | 0 | 4 | ⬜ |
-| **Total** | **47** | **23** | **24** | — |
+| **Total** | **47** | **27** | **20** | — |
