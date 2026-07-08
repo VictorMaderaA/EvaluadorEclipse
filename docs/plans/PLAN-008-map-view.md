@@ -3,7 +3,7 @@
 > Issue: [#8 — Map View: MapLibre con heatmap grid + marcadores de puntos](https://github.com/VictorMaderaA/EvaluadorEclipse/issues/8)
 > Análisis: [decisiones-analisis.md § A6, B8, G1, G7](docs/analysis/decisiones-analisis.md)
 > Dependencias: #7 (grid) ✅ 046e725, #6 (points) ✅ 290780e, #5 (score) ✅ 81b695d
-> Estado: Pendiente de ejecución
+> Estado: ✅ Completado
 
 ---
 
@@ -11,11 +11,11 @@
 
 | Fase | Estado | Fecha | Commit |
 |------|--------|-------|--------|
-| 1 | ⏳ Pendiente | — | — |
-| 2 | ⏳ Pendiente | — | — |
-| 3 | ⏳ Pendiente | — | — |
-| 4 | ⏳ Pendiente | — | — |
-| 5 | ⏳ Pendiente | — | — |
+| 1 | ✅ Completada | 2026-07-08 | — |
+| 2 | ✅ Completada | 2026-07-08 | — |
+| 3 | ✅ Completada | 2026-07-08 | — |
+| 4 | ✅ Completada | 2026-07-08 | — |
+| 5 | ✅ Completada | 2026-07-08 | — |
 
 ---
 

@@ -1,2 +1,2 @@
-// Map view, timeline view, ranking
-// Implemented in issues #8, #9, #11
+export { MapView } from './MapView'
+export type { MapViewProps } from './MapView'
