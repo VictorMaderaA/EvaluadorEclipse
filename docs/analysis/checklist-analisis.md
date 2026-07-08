@@ -17,10 +17,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | Dato | Valor |
 |------|-------|
-| Última sección completada | — |
-| Siguiente sección | A (Stack técnico y arquitectura) |
-| Commit más reciente | — (repo sin commits) |
-| Decisiones que condicionan secciones restantes | — |
+| Última sección completada | A (Stack técnico y arquitectura) |
+| Siguiente sección | B (Modelo de scoring v1) |
+| Commit más reciente | (pendiente commit sección A) |
+| Decisiones que condicionan secciones restantes | TypeScript+React+Vite+MapLibre, SPA pura, API keys en localStorage |
 
 ### Archivos explorados
 
@@ -38,12 +38,12 @@ Para cada sección se sigue un ciclo iterativo:
 
 | # | Punto | Estado | Notas |
 |---|-------|--------|-------|
-| A1 | Lenguaje principal (TypeScript vs JavaScript vs otro) | ⬜ | mvp.md no especifica |
-| A2 | Framework frontend (React, Vue, Svelte, vanilla) | ⬜ | mvp.md menciona "frontend web con mapa interactivo" |
-| A3 | Capa de servicios (backend separado vs serverless vs solo frontend) | ⬜ | mvp.md: "capa de servicios ligera" |
-| A4 | Bundler/tooling (Vite, Next, Astro, etc.) | ⬜ | — |
-| A5 | Monorepo vs single-app | ⬜ | — |
-| A6 | Librería de mapas (Leaflet, MapLibre, Mapbox GL) | ⬜ | mvp.md: "mapa 2D con capas básicas" |
+| A1 | Lenguaje principal (TypeScript vs JavaScript vs otro) | ✅ | TypeScript |
+| A2 | Framework frontend (React, Vue, Svelte, vanilla) | ✅ | React |
+| A3 | Capa de servicios (backend separado vs serverless vs solo frontend) | ✅ | SPA pura, API keys en localStorage |
+| A4 | Bundler/tooling (Vite, Next, Astro, etc.) | ✅ | Vite |
+| A5 | Monorepo vs single-app | ✅ | Single-app con módulos por carpeta |
+| A6 | Librería de mapas (Leaflet, MapLibre, Mapbox GL) | ✅ | MapLibre GL JS + react-map-gl, tiles gratuitas |
 
 ## Sección B — Modelo de scoring v1 [compleja]
 
@@ -56,6 +56,7 @@ Para cada sección se sigue un ciclo iterativo:
 | B5 | Normalización de componentes (0-100 vs 0-1 vs otro rango) | ⬜ | — |
 | B6 | Integración de confianza del modelo (ensemble) | ⬜ | mvp.md: 5% peso sugerido |
 | B7 | Parametrización y configuración de pesos en runtime | ⬜ | — |
+| B8 | Definición del grid para heatmap: resolución de celda, área de cobertura, relación con catálogo | ⬜ | Nuevo: derivado de decisión A6 |
 
 ## Sección C — Integración meteorológica (Open-Meteo) [media]
 
@@ -135,8 +136,8 @@ Para cada sección se sigue un ciclo iterativo:
 
 | Sección | Total | Resueltos | Pendientes | Estado |
 |---------|-------|-----------|------------|--------|
-| A — Stack técnico | 6 | 0 | 6 | ⬜ |
-| B — Scoring v1 | 7 | 0 | 7 | ⬜ |
+| A — Stack técnico | 6 | 6 | 0 | ✅ |
+| B — Scoring v1 | 8 | 0 | 8 | ⬜ |
 | C — Meteorología | 5 | 0 | 5 | ⬜ |
 | D — Catálogo puntos | 4 | 0 | 4 | ⬜ |
 | E — Motor solar | 4 | 0 | 4 | ⬜ |
@@ -145,4 +146,4 @@ Para cada sección se sigue un ciclo iterativo:
 | H — Modos temporales | 4 | 0 | 4 | ⬜ |
 | I — Explicabilidad | 3 | 0 | 3 | ⬜ |
 | J — Deployment | 4 | 0 | 4 | ⬜ |
-| **Total** | **45** | **0** | **45** | — |
+| **Total** | **46** | **6** | **40** | — |
