@@ -3,7 +3,7 @@
 > Issue: [#4 — Elevation Provider: consulta de elevación para puntos custom](https://github.com/VictorMaderaA/EvaluadorEclipse/issues/4)
 > Análisis: [decisiones-analisis.md § F1-F2](docs/analysis/decisiones-analisis.md)
 > Dependencia: #1 (setup) — ✅ Completada (commit c62cadd)
-> Estado: Pendiente de ejecución
+> Estado: ✅ Completado
 
 ---
 
@@ -11,8 +11,8 @@
 
 | Fase | Estado | Fecha | Commit |
 |------|--------|-------|--------|
-| 1 | ⏳ Pendiente | — | — |
-| 2 | ⏳ Pendiente | — | — |
+| 1 | ✅ Completada | 2026-07-08 | — |
+| 2 | ✅ Completada | 2026-07-08 | — |
 
 ---
 
