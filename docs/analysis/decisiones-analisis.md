@@ -825,3 +825,63 @@ Adicionalmente, soporte para parámetro URL: `?mode=eclipse&date=2027-08-02&time
 **Referencia fuente:** mvp.md § Modo eclipse: "Fijar manualmente la fecha y hora objetivo"
 
 **Impacto:** `src/config/eclipse-config.ts` con lectura URL params → localStorage → defaults. Componente de configuración en el panel de modo eclipse.
+
+---
+
+## I — Explicabilidad y comunicación del score
+
+### I1 — Formato del resumen textual por punto
+
+**Decisión:** Texto generado algorítmicamente mediante templates con lógica condicional. 1-2 frases por punto. Primera frase = factor dominante (positivo o negativo). Segunda frase = matiz o factor secundario relevante. Sin LLM.
+
+**Ejemplo de implementación:**
+```typescript
+function generateExplanation(components: ScoreComponents): string {
+  const dominant = getDominantFactor(components)
+  const weakness = getWeakestFactor(components)
+  // "Corredor muy despejado hacia el Sol. Nubosidad baja moderada puede afectar."
+  // "Punto con buena elevación y cielo previsto despejado. Alta confianza entre modelos."
+}
+```
+
+**Motivo:** Templates son deterministas, rápidos, sin dependencia externa, y garantizan consistencia en el tono. La lógica condicional permite cubrir los casos relevantes sin complejidad de NLP.
+
+**Descartado:** LLM para generación de texto (dependencia externa, latencia, coste, inconsistencia entre runs), texto estático idéntico para todos (no aporta información específica del punto).
+
+**Referencia fuente:** mvp.md § UX: "Motivo resumido del ranking, por ejemplo: 'mejor equilibrio entre nubosidad baja y dirección solar'"
+
+**Impacto:** `src/engines/explanation-engine.ts` — función pura que recibe componentes del score y devuelve string.
+
+---
+
+### I2 — Nivel de detalle del desglose
+
+**Decisión:** Dos niveles en la UI:
+1. **Resumen (siempre visible):** Score total (0-100) + texto explicativo (I1) + barras de progreso de los 5 componentes principales
+2. **Detalle (expandible):** Valores numéricos exactos por componente, datos crudos (cloud_cover %, altitud solar °, azimut °, coords del corredor, modelo usado, timestamp del forecast)
+
+**Motivo:** El usuario casual obtiene valor inmediato del resumen. El usuario avanzado (o el desarrollador calibrando pesos) puede expandir para ver exactamente qué datos alimentaron el score. Útil también para debugging.
+
+**Descartado:** Solo resumen (pierde transparencia para calibrado), todo visible siempre (abruma al usuario casual).
+
+**Referencia fuente:** mvp.md § Riesgos: "Si el score final no se puede explicar con una frase simple, será difícil confiar en él"
+
+**Impacto:** Componente `ScoreBreakdown` con estado collapsed/expanded. Componente `ScoreDetail` para datos crudos.
+
+---
+
+### I3 — Tono y lenguaje
+
+**Decisión:** Tono divulgativo-técnico. Comprensible sin ser experto meteorológico. Incluir siempre el "por qué" del ranking. Disclaimer general una vez en la UI (no repetido por punto).
+
+**Criterios de redacción:**
+- Usar: "nubosidad", "corredor solar", "confianza del pronóstico", "despejado", "cubierto"
+- Evitar: jerga meteorológica técnica ("advección", "cizalladura", "estratocumuliforme")
+- Evitar: exceso de informalidad o promesas ("¡genial!", "perfecto para ver el eclipse")
+- Incluir disclaimer una vez: "Este sistema ofrece una comparación probabilística basada en modelos meteorológicos. No garantiza visibilidad."
+
+**Motivo:** El producto se dirige a usuarios interesados en observación del eclipse pero no necesariamente meteorólogos. El tono debe generar confianza sin prometer más de lo que el sistema puede ofrecer.
+
+**Referencia fuente:** mvp.md § Enfoque de producto: "ranking probabilístico de observación, no como un veredicto binario"
+
+**Impacto:** Templates de texto en `explanation-engine.ts`. Componente de disclaimer en footer o panel info.

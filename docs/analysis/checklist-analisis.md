@@ -17,10 +17,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | Dato | Valor |
 |------|-------|
-| Última sección completada | H (Modos temporales) |
-| Siguiente sección | I (Explicabilidad y comunicación del score) |
-| Commit más reciente | ce31305 docs(análisis): sección G completada |
-| Decisiones que condicionan secciones restantes | Toggle 72h/eclipse con slider, ventana -60/+15 configurable, tendencia ▲▼= sin historial, config en localStorage+URL params |
+| Última sección completada | I (Explicabilidad y comunicación del score) |
+| Siguiente sección | J (Estrategia de deployment y operación) |
+| Commit más reciente | 7d505bc docs(análisis): sección H completada |
+| Decisiones que condicionan secciones restantes | Explicación por templates (sin LLM), tono divulgativo-técnico, 2 niveles de detalle |
 
 ### Archivos explorados
 
@@ -120,9 +120,9 @@ Para cada sección se sigue un ciclo iterativo:
 
 | # | Punto | Estado | Notas |
 |---|-------|--------|-------|
-| I1 | Formato del resumen textual por punto | ⬜ | mvp.md: "motivo resumido" |
-| I2 | Nivel de detalle del desglose (componentes visibles vs ocultos) | ⬜ | — |
-| I3 | Tono y lenguaje (técnico vs divulgativo) | ⬜ | — |
+| I1 | Formato del resumen textual por punto | ✅ | Templates con lógica condicional, 1-2 frases, sin LLM |
+| I2 | Nivel de detalle del desglose (componentes visibles vs ocultos) | ✅ | 2 niveles: resumen visible + detalle expandible con datos crudos |
+| I3 | Tono y lenguaje (técnico vs divulgativo) | ✅ | Divulgativo-técnico. Disclaimer general una vez. |
 
 ## Sección J — Estrategia de deployment y operación [simple]
 
@@ -147,6 +147,6 @@ Para cada sección se sigue un ciclo iterativo:
 | F — Elevación | 3 | 3 | 0 | ✅ |
 | G — UX y vistas | 7 | 7 | 0 | ✅ |
 | H — Modos temporales | 4 | 4 | 0 | ✅ |
-| I — Explicabilidad | 3 | 0 | 3 | ⬜ |
+| I — Explicabilidad | 3 | 3 | 0 | ✅ |
 | J — Deployment | 4 | 0 | 4 | ⬜ |
-| **Total** | **48** | **41** | **7** | — |
+| **Total** | **48** | **44** | **4** | — |
