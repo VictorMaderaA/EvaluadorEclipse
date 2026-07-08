@@ -562,3 +562,60 @@ corridor_component = 1 - (corridor_score / 100)  // invertir: menos nubes = mejo
 **Referencia fuente:** mvp.md § Modelo conceptual: "penalización adicional cuando la altitud solar sea baja" — extendido lógicamente a "no evaluar si es negativa".
 
 **Impacto:** Filtro previo al scoring en `score-engine.ts`. Timeline en UI solo muestra horas diurnas.
+
+---
+
+## F — Elevación y relieve
+
+### F1 — API de elevación
+
+**Decisión:** Open-Meteo Elevation API (`/v1/elevation?latitude=...&longitude=...`). Para puntos del catálogo base, la elevación se hardcodea en el JSON (conocida al curar). Para puntos custom, se consulta la API una vez al crear el punto y se guarda en localStorage.
+
+**Motivo:** Misma fuente que el forecast (Open-Meteo), sin API key, CORS-friendly, soporta coordenadas múltiples. La elevación no cambia → solo se consulta una vez por punto.
+
+**Descartado:** Mapbox Terrain-RGB (requiere API key, orientado a visualización no datos puntuales), DEM descargado localmente (no viable en SPA browser).
+
+**Referencia fuente:** mvp.md § Fuentes de datos: "La Elevation API de Open-Meteo encaja bien para enriquecer los puntos"
+
+**Impacto:** `src/providers/elevation-provider.ts` — llamada única por punto custom nuevo. Catálogo base ya tiene el dato.
+
+---
+
+### F2 — Cómo influye la elevación en el score
+
+**Decisión:** Componente de bonificación por altitud con curva simple:
+- 0m → 0.3 (mínimo, no penaliza completamente la costa)
+- 800m → ~0.67
+- 1500m+ → 1.0 (techo)
+
+```typescript
+function elevationScore(elevationM: number): number {
+  if (elevationM >= 1500) return 1.0
+  if (elevationM <= 0) return 0.3
+  return 0.3 + (elevationM / 1500) * 0.7
+}
+```
+
+Peso en el score total: 10% (según B2).
+
+**Motivo:** Mayor elevación reduce probabilidad de nubes bajas y niebla. La curva tiene un mínimo de 0.3 (no 0) porque un punto costero con cielo despejado sigue siendo viable. Techo a 1500m porque por encima el beneficio marginal es mínimo.
+
+**Descartado:** Lineal sin techo (puntos a 3000m tendrían ventaja excesiva vs 1500m), binaria (>800m sí/no — pierde granularidad).
+
+**Referencia fuente:** mvp.md § Scoring: "Ajuste por elevación o relieve simple" (10% peso)
+
+**Impacto:** Función en `src/engines/score-engine.ts`. Input: campo `elevation` del punto.
+
+---
+
+### F3 — Horizonte orográfico
+
+**Decisión:** Fuera del alcance del MVP. Se registra como mejora para fase posterior.
+
+**Motivo:** El análisis de horizonte (skyline) requiere DEM de alta resolución + raycasting desde cada punto en dirección al azimut solar → complejidad desproporcionada para el beneficio en v1. Los puntos del catálogo base ya se seleccionan manualmente con criterio "horizonte despejado" (D3), lo que funciona como sustituto humano del análisis automático.
+
+**Descartado para MVP:** Raycasting con Terrain-RGB, análisis de perfil de elevación en dirección solar, integración con APIs de skyline.
+
+**Referencia fuente:** mvp.md § Fuentes de datos: "debería tratarse como opcional o de fase 2 salvo que se confirme que aporta mucho valor al ranking del MVP"
+
+**Impacto:** Ninguno en MVP. Registro para roadmap post-MVP.

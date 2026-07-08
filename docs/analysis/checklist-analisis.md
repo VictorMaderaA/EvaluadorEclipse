@@ -17,10 +17,10 @@ Para cada sección se sigue un ciclo iterativo:
 
 | Dato | Valor |
 |------|-------|
-| Última sección completada | E (Motor solar y corredor direccional) |
-| Siguiente sección | F (Elevación y relieve) |
-| Commit más reciente | d1af441 docs(análisis): sección D completada |
-| Decisiones que condicionan secciones restantes | TypeScript+React+Vite+MapLibre, SPA pura, SunCalc para posición solar, corredor 3 puntos geodésicos, cache 2 niveles (mem 1h + localStorage 5min), grid sin corredor |
+| Última sección completada | F (Elevación y relieve) |
+| Siguiente sección | G (UX y vistas del MVP) |
+| Commit más reciente | 5d5c83c docs(análisis): sección E completada |
+| Decisiones que condicionan secciones restantes | Stack completo definido. Score: híbrido, 5 componentes (30/25/25/10/10). Datos: Open-Meteo forecast+elevation, SunCalc, JSON+localStorage. Cache 2 niveles. Grid 10km heatmap. Horizonte fuera MVP. |
 
 ### Archivos explorados
 
@@ -91,9 +91,9 @@ Para cada sección se sigue un ciclo iterativo:
 
 | # | Punto | Estado | Notas |
 |---|-------|--------|-------|
-| F1 | API de elevación: Open-Meteo Elevation vs alternativas | ⬜ | mvp.md recomienda Open-Meteo |
-| F2 | Cómo influye la elevación en el score | ⬜ | mvp.md: 10% peso |
-| F3 | Indicador de horizonte orográfico: alcance MVP vs fase posterior | ⬜ | mvp.md: "si se implementa" |
+| F1 | API de elevación: Open-Meteo Elevation vs alternativas | ✅ | Open-Meteo Elevation. Catálogo: hardcodeada. Custom: consulta al crear |
+| F2 | Cómo influye la elevación en el score | ✅ | Curva 0.3→1.0 con techo 1500m, peso 10% |
+| F3 | Indicador de horizonte orográfico: alcance MVP vs fase posterior | ✅ | Fuera del MVP. Curación manual como sustituto |
 
 ## Sección G — UX y vistas del MVP [media]
 
@@ -143,9 +143,9 @@ Para cada sección se sigue un ciclo iterativo:
 | C — Meteorología | 5 | 5 | 0 | ✅ |
 | D — Catálogo puntos | 4 | 4 | 0 | ✅ |
 | E — Motor solar | 4 | 4 | 0 | ✅ |
-| F — Elevación | 3 | 0 | 3 | ⬜ |
+| F — Elevación | 3 | 3 | 0 | ✅ |
 | G — UX y vistas | 6 | 0 | 6 | ⬜ |
 | H — Modos temporales | 4 | 0 | 4 | ⬜ |
 | I — Explicabilidad | 3 | 0 | 3 | ⬜ |
 | J — Deployment | 4 | 0 | 4 | ⬜ |
-| **Total** | **47** | **27** | **20** | — |
+| **Total** | **47** | **30** | **17** | — |
