@@ -20,6 +20,7 @@ export function RankingList({ points, selectedPointId, onSelectPoint }: RankingL
         {sorted.map(({ point, score }) => (
           <PointCard
             key={point.id}
+            pointId={point.id}
             name={point.name}
             region={point.region}
             score={score}

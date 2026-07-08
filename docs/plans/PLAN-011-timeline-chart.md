@@ -3,7 +3,7 @@
 > Issue: [#11 — Timeline Chart: gráfico de evolución temporal del score por punto](https://github.com/VictorMaderaA/EvaluadorEclipse/issues/11)
 > Análisis: [decisiones-analisis.md § G5, H3](docs/analysis/decisiones-analisis.md)
 > Dependencias: #5 (score) ✅ 81b695d, #9 (sidebar) ✅ cf8886d
-> Estado: Pendiente de ejecución
+> Estado: ✅ Completado
 
 ---
 
@@ -11,9 +11,9 @@
 
 | Fase | Estado | Fecha | Commit |
 |------|--------|-------|--------|
-| 1 | ⏳ Pendiente | — | — |
-| 2 | ⏳ Pendiente | — | — |
-| 3 | ⏳ Pendiente | — | — |
+| 1 | ✅ Completada | 2026-07-08 | — |
+| 2 | ✅ Completada | 2026-07-08 | — |
+| 3 | ✅ Completada | 2026-07-08 | — |
 
 ---
 

@@ -1,16 +1,20 @@
 import { useState } from 'react'
 import type { ObservationPoint, ScoreResult, SolarPosition, ForecastData } from '../config/types'
 import { scoreToColor, azimuthToCardinal } from './utils'
+import { TimelineChart } from './TimelineChart'
+import type { TimelineDataPoint } from './TimelineChart'
+import { TrendIndicator } from './TrendIndicator'
 
 interface PointDetailProps {
   point: ObservationPoint
   score?: ScoreResult
   solarPosition?: SolarPosition
   forecast?: ForecastData
+  timelineData?: TimelineDataPoint[]
   onBack: () => void
 }
 
-export function PointDetail({ point, score, solarPosition, forecast, onBack }: PointDetailProps) {
+export function PointDetail({ point, score, solarPosition, forecast, timelineData, onBack }: PointDetailProps) {
   const [showRawData, setShowRawData] = useState(false)
 
   return (
@@ -46,6 +50,7 @@ export function PointDetail({ point, score, solarPosition, forecast, onBack }: P
               {score.total}
             </span>
             <span className="text-gray-400 text-lg">/100</span>
+            <TrendIndicator currentScore={score.total} pointId={point.id} />
           </div>
           {score.penalty < 1.0 && (
             <p className="text-xs text-red-600 mt-1">
@@ -87,9 +92,10 @@ export function PointDetail({ point, score, solarPosition, forecast, onBack }: P
         </div>
       )}
 
-      {/* Timeline placeholder */}
-      <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-        <p className="text-xs text-gray-400 text-center">Gráfico de evolución temporal (próximamente)</p>
+      {/* Timeline chart */}
+      <div className="mb-4">
+        <h3 className="text-sm font-semibold text-gray-700 mb-1">Evolución temporal</h3>
+        <TimelineChart data={timelineData ?? []} />
       </div>
 
       {/* Raw data expandible */}

@@ -1,17 +1,16 @@
 import { scoreToColor } from './utils'
+import { TrendIndicator } from './TrendIndicator'
 
 interface PointCardProps {
+  pointId: string
   name: string
   region: string
   score?: number
-  trend?: 'up' | 'down' | 'stable'
   isSelected: boolean
   onClick: () => void
 }
 
-const trendIcons = { up: '▲', down: '▼', stable: '=' } as const
-
-export function PointCard({ name, region, score, trend, isSelected, onClick }: PointCardProps) {
+export function PointCard({ pointId, name, region, score, isSelected, onClick }: PointCardProps) {
   return (
     <button
       onClick={onClick}
@@ -25,10 +24,8 @@ export function PointCard({ name, region, score, trend, isSelected, onClick }: P
           <p className="text-xs text-gray-500 truncate">{region}</p>
         </div>
         <div className="flex items-center gap-1 ml-2">
-          {trend && (
-            <span className={`text-xs ${trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-gray-400'}`}>
-              {trendIcons[trend]}
-            </span>
+          {score !== undefined && (
+            <TrendIndicator currentScore={score} pointId={pointId} />
           )}
           <span
             className="text-lg font-bold min-w-[2.5rem] text-right"
