@@ -11,9 +11,9 @@
 
 | Fase | Estado | Fecha | Commit |
 |------|--------|-------|--------|
-| 1 | ✅ Completada | 2026-07-08 | — |
-| 2 | ✅ Completada | 2026-07-08 | — |
-| 3 | ✅ Completada | 2026-07-08 | — |
+| 1 | ✅ Completada | 2026-07-08 | 046e725 |
+| 2 | ✅ Completada | 2026-07-08 | 046e725 |
+| 3 | ✅ Completada | 2026-07-08 | 046e725 |
 
 ---
 
