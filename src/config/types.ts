@@ -42,3 +42,32 @@ export interface GridCell {
   score?: number
   forecastData?: ForecastData
 }
+
+/** Respuesta horaria completa de Open-Meteo para una coordenada */
+export interface HourlyForecast {
+  latitude: number
+  longitude: number
+  elevation: number
+  times: string[]
+  cloudCover: number[]
+  cloudCoverLow: number[]
+  cloudCoverMid: number[]
+  cloudCoverHigh: number[]
+  visibility: number[]
+}
+
+/** Opciones para consultar forecast */
+export interface ForecastRequest {
+  coordinates: Array<{ lat: number; lon: number }>
+  model: 'best_match' | 'icon_eu'
+  forecastDays?: number
+  startDate?: string
+  endDate?: string
+}
+
+/** Resultado de cache con metadata */
+export interface CachedForecast {
+  data: HourlyForecast
+  fetchedAt: number
+  model: string
+}

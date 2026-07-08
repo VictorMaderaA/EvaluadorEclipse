@@ -1,2 +1,2 @@
-// Forecast provider, elevation provider, forecast cache
-// Implemented in issues #2, #4
+export { getForecast, splitIntoBatches } from './forecast-provider'
+export { getCacheKey, getFromCache, setInCache, clearAllCache, clearExpiredStorage } from './forecast-cache'
