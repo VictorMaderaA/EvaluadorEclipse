@@ -1,112 +1,177 @@
 [
   {
     "id": "cat-001",
-    "name": "Embalse de Ricobayo",
-    "region": "Zamora, Castilla y León",
-    "coordinates": { "lat": 41.52, "lon": -5.98 },
-    "elevation": 680,
+    "name": "Calatañazor",
+    "region": "Soria, Castilla y León",
+    "coordinates": { "lat": 41.70, "lon": -2.82 },
+    "elevation": 1027,
     "source": "catalog",
-    "tags": ["horizonte WNW despejado", "meseta", "eclipse-2026"],
-    "metadata": { "access": "Carretera desde Zamora (40min)", "parking": true, "notes": "Horizonte abierto hacia WNW sobre el embalse. Zona de mejor climatología." }
+    "tags": ["línea central", "eclipse-2026", "recomendado-space.com"],
+    "metadata": {
+      "access": "Carretera SO-P-5024 desde Soria (30min)",
+      "parking": true,
+      "eclipse": { "totalidad": "20:29 CEST", "duracion": "1min 43s", "altitudSol": 7.4, "nubes_historico": "24%" },
+      "notes": "Cerca de la línea central. Pueblo medieval sobre colina con vistas WNW al Valle de la Sangre. Verificado por Space.com."
+    }
   },
   {
     "id": "cat-002",
-    "name": "Tierra de Campos (Villalón de Campos)",
-    "region": "Valladolid, Castilla y León",
-    "coordinates": { "lat": 42.06, "lon": -4.87 },
-    "elevation": 750,
+    "name": "Fortaleza califal de Gormaz",
+    "region": "Soria, Castilla y León",
+    "coordinates": { "lat": 41.49, "lon": -3.01 },
+    "elevation": 1056,
     "source": "catalog",
-    "tags": ["meseta llana", "horizonte 360°", "eclipse-2026"],
-    "metadata": { "access": "Autovía A-65 desde Valladolid (45min)", "parking": true, "notes": "Llanura cerealista sin obstáculos. Horizonte plano en todas direcciones." }
+    "tags": ["línea central", "eclipse-2026", "horizonte WNW perfecto", "recomendado-space.com"],
+    "metadata": {
+      "access": "Carretera desde Berlanga de Duero o San Esteban de Gormaz",
+      "parking": true,
+      "eclipse": { "totalidad": "20:29 CEST", "duracion": "1min 42s", "altitudSol": 7.4, "nubes_historico": "20%" },
+      "notes": "Murallas orientadas al NW, 'balcón perfecto' para ver la sombra acercarse. Climatología excepcional (20% nubes). Verificado por Space.com."
+    }
   },
   {
     "id": "cat-003",
-    "name": "Bardenas Reales",
-    "region": "Navarra",
+    "name": "Castildetierra (Bardenas Reales)",
+    "region": "Tudela, Navarra",
     "coordinates": { "lat": 42.22, "lon": -1.58 },
     "elevation": 390,
     "source": "catalog",
-    "tags": ["desierto", "horizonte despejado", "eclipse-2026"],
-    "metadata": { "access": "Carretera NA-134 desde Tudela", "parking": true, "notes": "Paisaje desértico sin vegetación alta. Horizonte WNW totalmente libre." }
+    "tags": ["desierto", "horizonte despejado", "eclipse-2026", "recomendado-space.com"],
+    "metadata": {
+      "access": "Carretera NA-134 desde Tudela (20min). Desde Corella ~35min.",
+      "parking": true,
+      "eclipse": { "totalidad": "20:28 CEST", "duracion": "1min 04s", "altitudSol": 6.7, "nubes_historico": "31%" },
+      "notes": "Paisaje semidesértico de Bardenas Reales. Horizonte completamente despejado en todas direcciones. Verificado por Space.com."
+    }
   },
   {
     "id": "cat-004",
-    "name": "Monegros (Bujaraloz)",
-    "region": "Zaragoza, Aragón",
-    "coordinates": { "lat": 41.50, "lon": -0.15 },
-    "elevation": 350,
+    "name": "Humedales de Alfaro",
+    "region": "La Rioja",
+    "coordinates": { "lat": 42.18, "lon": -1.75 },
+    "elevation": 290,
     "source": "catalog",
-    "tags": ["estepa", "cielos limpios", "eclipse-2026"],
-    "metadata": { "access": "Autovía A-2 desde Zaragoza (50min)", "parking": true, "notes": "Estepa árida con excelente climatología en agosto. Horizonte plano." }
+    "tags": ["ribera Ebro", "eclipse-2026", "recomendado-space.com"],
+    "metadata": {
+      "access": "AP-68 salida Alfaro. Desde Corella ~20min.",
+      "parking": true,
+      "eclipse": { "totalidad": "20:28 CEST", "duracion": "1min 16s", "altitudSol": 6.9, "nubes_historico": "31%" },
+      "notes": "Reserva Natural Sotos del Ebro. Praderas abiertas junto al río con horizonte libre. Verificado por Space.com."
+    }
   },
   {
     "id": "cat-005",
-    "name": "Sierra de Javalambre",
-    "region": "Teruel, Aragón",
-    "coordinates": { "lat": 40.08, "lon": -1.02 },
-    "elevation": 1950,
+    "name": "San Vicente de la Sonsierra",
+    "region": "La Rioja",
+    "coordinates": { "lat": 42.57, "lon": -2.77 },
+    "elevation": 528,
     "source": "catalog",
-    "tags": ["observatorio", "elevación", "eclipse-2026"],
-    "metadata": { "access": "Pista forestal desde Camarena de la Sierra", "parking": false, "notes": "En el límite sur de totalidad. Verificar posición exacta. Alta elevación compensa sol bajo." }
+    "tags": ["viñedos", "colina", "eclipse-2026", "recomendado-space.com"],
+    "metadata": {
+      "access": "N-124 desde Haro/Logroño (~45min desde Corella)",
+      "parking": true,
+      "eclipse": { "totalidad": "20:28 CEST", "duracion": "1min 22s", "altitudSol": 7.8, "nubes_historico": "47%" },
+      "notes": "Pueblo en colina sobre el Ebro con vistas al sol poniente. Ruta del Vino. Mayor riesgo de nubes (47%). Verificado por Space.com."
+    }
   },
   {
     "id": "cat-006",
-    "name": "Alto de Navacerrada",
-    "region": "Sierra de Guadarrama, Madrid/Segovia",
-    "coordinates": { "lat": 40.78, "lon": -4.01 },
-    "elevation": 1860,
+    "name": "Laguna de Gallocanta",
+    "region": "Teruel/Zaragoza, Aragón",
+    "coordinates": { "lat": 40.97, "lon": -1.50 },
+    "elevation": 1000,
     "source": "catalog",
-    "tags": ["montaña", "accesible", "eclipse-2026"],
-    "metadata": { "access": "Puerto de montaña con aparcamiento", "parking": true, "notes": "Cerca del límite sur de totalidad. Verificar con mapa de franja. Horizonte W amplio." }
+    "tags": ["línea central", "meseta alta", "eclipse-2026", "recomendado-space.com"],
+    "metadata": {
+      "access": "A-211 desde Daroca. Desde Soria ~1h30.",
+      "parking": true,
+      "eclipse": { "totalidad": "20:30 CEST", "duracion": "1min 42s", "altitudSol": 6.0, "nubes_historico": "22%" },
+      "notes": "Casi en la línea central. Laguna salada en meseta alta con horizonte plano 360°. Mejor climatología de la zona (22% nubes). Miradores: Obs. de la Reguera, Obs. El Cañizar, Mirador de Tornos. Verificado por Space.com."
+    }
   },
   {
     "id": "cat-007",
-    "name": "Cabo de Finisterre",
-    "region": "A Coruña, Galicia",
-    "coordinates": { "lat": 42.88, "lon": -9.27 },
-    "elevation": 140,
+    "name": "Arcos de las Salinas (Galáctica)",
+    "region": "Teruel, Aragón",
+    "coordinates": { "lat": 40.00, "lon": -1.10 },
+    "elevation": 1080,
     "source": "catalog",
-    "tags": ["costa", "horizonte marino WNW", "eclipse-2026"],
-    "metadata": { "access": "Carretera AC-445", "parking": true, "notes": "Horizonte marino sin obstáculos hacia WNW. Mayor altitud solar (~12°) por ser más al oeste. Riesgo de niebla costera." }
+    "tags": ["centro astronómico", "cielos limpios", "eclipse-2026", "recomendado-space.com"],
+    "metadata": {
+      "access": "Carretera A-1515 desde Teruel. Desde Soria ~2h (fuera de rango 1.5h).",
+      "parking": true,
+      "eclipse": { "totalidad": "20:31 CEST", "duracion": "1min 23s", "altitudSol": 5.2, "nubes_historico": "19%" },
+      "notes": "Centro Galáctica (mayor centro de divulgación astronómica de Europa). Evento con entrada. Mejor climatología del listado (19%). Verificado por Space.com."
+    }
   },
   {
     "id": "cat-008",
-    "name": "Playa de las Catedrales",
-    "region": "Lugo, Galicia",
-    "coordinates": { "lat": 43.55, "lon": -7.16 },
-    "elevation": 20,
+    "name": "Numancia (Cerro de la Muela)",
+    "region": "Garray, Soria",
+    "coordinates": { "lat": 41.81, "lon": -2.44 },
+    "elevation": 1080,
     "source": "catalog",
-    "tags": ["costa", "horizonte marino", "eclipse-2026"],
-    "metadata": { "access": "N-634 desde Ribadeo", "parking": true, "notes": "Dentro de totalidad. Horizonte abierto al WNW sobre el Cantábrico." }
+    "tags": ["yacimiento", "colina", "eclipse-2026"],
+    "metadata": {
+      "access": "7km desde Soria por N-111",
+      "parking": true,
+      "notes": "Yacimiento celtíbero-romano en cerro aislado. Panorámica 360° sobre meseta soriana. Horizonte WNW despejado."
+    }
   },
   {
     "id": "cat-009",
-    "name": "Soria (meseta)",
+    "name": "Mirador de la Dehesa (Soria)",
     "region": "Soria, Castilla y León",
-    "coordinates": { "lat": 41.76, "lon": -2.47 },
-    "elevation": 1050,
+    "coordinates": { "lat": 41.77, "lon": -2.49 },
+    "elevation": 1065,
     "source": "catalog",
-    "tags": ["meseta alta", "baja humedad", "eclipse-2026"],
-    "metadata": { "access": "Múltiples accesos por N-234/N-122", "parking": true, "notes": "Centro de la franja de totalidad. Clima seco en agosto. Buscar punto con horizonte WNW libre." }
+    "tags": ["urbano", "accesible", "eclipse-2026"],
+    "metadata": {
+      "access": "En la propia ciudad de Soria, paseo de la Dehesa",
+      "parking": true,
+      "notes": "Punto elevado sobre el Duero con vistas al W-NW. Acceso inmediato desde el centro. Para quien no quiera desplazarse lejos."
+    }
   },
   {
     "id": "cat-010",
-    "name": "Mallorca (Cap de Formentor)",
-    "region": "Baleares",
-    "coordinates": { "lat": 39.96, "lon": 3.21 },
-    "elevation": 230,
+    "name": "Embalse de Monteagudo de las Vicarías",
+    "region": "Soria, Castilla y León",
+    "coordinates": { "lat": 41.54, "lon": -2.14 },
+    "elevation": 920,
     "source": "catalog",
-    "tags": ["isla", "horizonte marino W", "eclipse-2026"],
-    "metadata": { "access": "Carretera Ma-2210", "parking": true, "notes": "Sol a solo 2-5° de altitud. Necesita horizonte W marino perfecto. Riesgo de nubes lejanas en el horizonte." }
+    "tags": ["agua", "horizonte abierto", "eclipse-2026"],
+    "metadata": {
+      "access": "Carretera SO-630 desde Ágreda/Soria (~45min desde Soria, ~50min desde Corella)",
+      "parking": true,
+      "notes": "Embalse con horizonte abierto hacia W-NW sobre el agua. Entre Soria y Corella, punto intermedio."
+    }
   },
   {
     "id": "cat-011",
-    "name": "Peña de Francia",
-    "region": "Salamanca, Castilla y León",
-    "coordinates": { "lat": 40.51, "lon": -6.17 },
-    "elevation": 1723,
+    "name": "Cerro del Moncayo (zona media)",
+    "region": "Tarazona, Zaragoza",
+    "coordinates": { "lat": 41.79, "lon": -1.84 },
+    "elevation": 1600,
     "source": "catalog",
-    "tags": ["horizonte 360°", "elevación", "eclipse-2026"],
-    "metadata": { "access": "Carretera hasta la cima", "parking": true, "notes": "Cerca del límite sur. Cumbre aislada con panorámica completa. La elevación ayuda con sol bajo." }
+    "tags": ["montaña", "elevación", "eclipse-2026"],
+    "metadata": {
+      "access": "Carretera desde Tarazona/Agramonte. Desde Corella ~45min.",
+      "parking": true,
+      "notes": "Elevación compensa sol bajo. Verificar horizonte WNW (montañas pueden obstruir). Santuario del Moncayo como punto de acceso."
+    }
+  },
+  {
+    "id": "cat-012",
+    "name": "Fitero (Baños termales)",
+    "region": "Navarra",
+    "coordinates": { "lat": 42.06, "lon": -1.86 },
+    "elevation": 420,
+    "source": "catalog",
+    "tags": ["accesible", "ribera", "eclipse-2026"],
+    "metadata": {
+      "access": "NA-161 desde Corella (~15min)",
+      "parking": true,
+      "notes": "Muy cerca de Corella. Valle del Alhama con horizonte aceptable al W-NW. Alternativa si no se quiere conducir lejos."
+    }
   }
 ]
