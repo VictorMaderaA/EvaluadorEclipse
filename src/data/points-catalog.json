@@ -1,112 +1,112 @@
 [
   {
     "id": "cat-001",
-    "name": "Alto de Navacerrada",
-    "region": "Sierra de Guadarrama, Madrid",
-    "coordinates": { "lat": 40.7809, "lon": -4.0065 },
-    "elevation": 1860,
+    "name": "Embalse de Ricobayo",
+    "region": "Zamora, Castilla y León",
+    "coordinates": { "lat": 41.52, "lon": -5.98 },
+    "elevation": 680,
     "source": "catalog",
-    "tags": ["montaña", "accesible por carretera", "eclipse-2026"],
-    "metadata": { "access": "Puerto de montaña con aparcamiento", "parking": true }
+    "tags": ["horizonte WNW despejado", "meseta", "eclipse-2026"],
+    "metadata": { "access": "Carretera desde Zamora (40min)", "parking": true, "notes": "Horizonte abierto hacia WNW sobre el embalse. Zona de mejor climatología." }
   },
   {
     "id": "cat-002",
-    "name": "Pico Veleta (acceso carretera)",
-    "region": "Sierra Nevada, Granada",
-    "coordinates": { "lat": 37.0563, "lon": -3.3667 },
-    "elevation": 2550,
+    "name": "Tierra de Campos (Villalón de Campos)",
+    "region": "Valladolid, Castilla y León",
+    "coordinates": { "lat": 42.06, "lon": -4.87 },
+    "elevation": 750,
     "source": "catalog",
-    "tags": ["alta montaña", "horizonte despejado", "eclipse-2027"],
-    "metadata": { "access": "Carretera hasta Hoya de la Mora (2500m)", "parking": true }
+    "tags": ["meseta llana", "horizonte 360°", "eclipse-2026"],
+    "metadata": { "access": "Autovía A-65 desde Valladolid (45min)", "parking": true, "notes": "Llanura cerealista sin obstáculos. Horizonte plano en todas direcciones." }
   },
   {
     "id": "cat-003",
-    "name": "Observatorio del Teide",
-    "region": "Tenerife, Canarias",
-    "coordinates": { "lat": 28.3000, "lon": -16.5117 },
-    "elevation": 2390,
+    "name": "Bardenas Reales",
+    "region": "Navarra",
+    "coordinates": { "lat": 42.22, "lon": -1.58 },
+    "elevation": 390,
     "source": "catalog",
-    "tags": ["observatorio", "cielos limpios", "isla", "eclipse-2026"],
-    "metadata": { "access": "Carretera TF-24", "parking": true, "notes": "Requiere permiso para zona del observatorio" }
+    "tags": ["desierto", "horizonte despejado", "eclipse-2026"],
+    "metadata": { "access": "Carretera NA-134 desde Tudela", "parking": true, "notes": "Paisaje desértico sin vegetación alta. Horizonte WNW totalmente libre." }
   },
   {
     "id": "cat-004",
-    "name": "Javalambre",
-    "region": "Sierra de Javalambre, Teruel",
-    "coordinates": { "lat": 40.0781, "lon": -1.0158 },
-    "elevation": 1950,
+    "name": "Monegros (Bujaraloz)",
+    "region": "Zaragoza, Aragón",
+    "coordinates": { "lat": 41.50, "lon": -0.15 },
+    "elevation": 350,
     "source": "catalog",
-    "tags": ["observatorio", "baja contaminación lumínica", "eclipse-2026"],
-    "metadata": { "access": "Pista forestal desde Camarena de la Sierra", "parking": false }
+    "tags": ["estepa", "cielos limpios", "eclipse-2026"],
+    "metadata": { "access": "Autovía A-2 desde Zaragoza (50min)", "parking": true, "notes": "Estepa árida con excelente climatología en agosto. Horizonte plano." }
   },
   {
     "id": "cat-005",
-    "name": "Peña de Francia",
-    "region": "Sierra de Francia, Salamanca",
-    "coordinates": { "lat": 40.5128, "lon": -6.1706 },
-    "elevation": 1723,
+    "name": "Sierra de Javalambre",
+    "region": "Teruel, Aragón",
+    "coordinates": { "lat": 40.08, "lon": -1.02 },
+    "elevation": 1950,
     "source": "catalog",
-    "tags": ["santuario", "horizonte 360°", "eclipse-2026"],
-    "metadata": { "access": "Carretera hasta la cima", "parking": true }
+    "tags": ["observatorio", "elevación", "eclipse-2026"],
+    "metadata": { "access": "Pista forestal desde Camarena de la Sierra", "parking": false, "notes": "En el límite sur de totalidad. Verificar posición exacta. Alta elevación compensa sol bajo." }
   },
   {
     "id": "cat-006",
-    "name": "Sierra de Grazalema (Torreón)",
-    "region": "Sierra de Grazalema, Cádiz",
-    "coordinates": { "lat": 36.76, "lon": -5.42 },
-    "elevation": 1654,
+    "name": "Alto de Navacerrada",
+    "region": "Sierra de Guadarrama, Madrid/Segovia",
+    "coordinates": { "lat": 40.78, "lon": -4.01 },
+    "elevation": 1860,
     "source": "catalog",
-    "tags": ["alta montaña", "parque natural", "eclipse-2027"],
-    "metadata": { "access": "Sendero desde Benaocaz", "parking": false, "difficulty": "alta" }
+    "tags": ["montaña", "accesible", "eclipse-2026"],
+    "metadata": { "access": "Puerto de montaña con aparcamiento", "parking": true, "notes": "Cerca del límite sur de totalidad. Verificar con mapa de franja. Horizonte W amplio." }
   },
   {
     "id": "cat-007",
-    "name": "Tarifa (Punta Paloma)",
-    "region": "Tarifa, Cádiz",
-    "coordinates": { "lat": 36.06, "lon": -5.68 },
-    "elevation": 50,
+    "name": "Cabo de Finisterre",
+    "region": "A Coruña, Galicia",
+    "coordinates": { "lat": 42.88, "lon": -9.27 },
+    "elevation": 140,
     "source": "catalog",
-    "tags": ["costa", "horizonte marino", "eclipse-2027"],
-    "metadata": { "access": "Carretera CA-8202", "parking": true }
+    "tags": ["costa", "horizonte marino WNW", "eclipse-2026"],
+    "metadata": { "access": "Carretera AC-445", "parking": true, "notes": "Horizonte marino sin obstáculos hacia WNW. Mayor altitud solar (~12°) por ser más al oeste. Riesgo de niebla costera." }
   },
   {
     "id": "cat-008",
-    "name": "Sierra de las Nieves",
-    "region": "Parque Nacional, Málaga",
-    "coordinates": { "lat": 36.72, "lon": -5.01 },
-    "elevation": 1500,
+    "name": "Playa de las Catedrales",
+    "region": "Lugo, Galicia",
+    "coordinates": { "lat": 43.55, "lon": -7.16 },
+    "elevation": 20,
     "source": "catalog",
-    "tags": ["parque nacional", "alta montaña", "eclipse-2027"],
-    "metadata": { "access": "Pista forestal desde Ronda", "parking": false }
+    "tags": ["costa", "horizonte marino", "eclipse-2026"],
+    "metadata": { "access": "N-634 desde Ribadeo", "parking": true, "notes": "Dentro de totalidad. Horizonte abierto al WNW sobre el Cantábrico." }
   },
   {
     "id": "cat-009",
-    "name": "Sierra Bermeja",
-    "region": "Estepona, Málaga",
-    "coordinates": { "lat": 36.50, "lon": -5.20 },
-    "elevation": 1449,
+    "name": "Soria (meseta)",
+    "region": "Soria, Castilla y León",
+    "coordinates": { "lat": 41.76, "lon": -2.47 },
+    "elevation": 1050,
     "source": "catalog",
-    "tags": ["montaña", "horizonte despejado", "eclipse-2027"],
-    "metadata": { "access": "Pista desde Estepona/Jubrique", "parking": true }
+    "tags": ["meseta alta", "baja humedad", "eclipse-2026"],
+    "metadata": { "access": "Múltiples accesos por N-234/N-122", "parking": true, "notes": "Centro de la franja de totalidad. Clima seco en agosto. Buscar punto con horizonte WNW libre." }
   },
   {
     "id": "cat-010",
-    "name": "Cabo de Gata",
-    "region": "Parque Natural, Almería",
-    "coordinates": { "lat": 36.72, "lon": -2.19 },
-    "elevation": 60,
+    "name": "Mallorca (Cap de Formentor)",
+    "region": "Baleares",
+    "coordinates": { "lat": 39.96, "lon": 3.21 },
+    "elevation": 230,
     "source": "catalog",
-    "tags": ["costa", "cielos limpios", "eclipse-2027"],
-    "metadata": { "access": "Carretera AL-3115", "parking": true }
+    "tags": ["isla", "horizonte marino W", "eclipse-2026"],
+    "metadata": { "access": "Carretera Ma-2210", "parking": true, "notes": "Sol a solo 2-5° de altitud. Necesita horizonte W marino perfecto. Riesgo de nubes lejanas en el horizonte." }
   },
   {
     "id": "cat-011",
-    "name": "Grazalema pueblo",
-    "region": "Sierra de Grazalema, Cádiz",
-    "coordinates": { "lat": 36.77, "lon": -5.37 },
-    "elevation": 823,
+    "name": "Peña de Francia",
+    "region": "Salamanca, Castilla y León",
+    "coordinates": { "lat": 40.51, "lon": -6.17 },
+    "elevation": 1723,
     "source": "catalog",
-    "tags": ["pueblo", "accesible", "eclipse-2027"],
-    "metadata": { "access": "Carretera A-372", "parking": true }
+    "tags": ["horizonte 360°", "elevación", "eclipse-2026"],
+    "metadata": { "access": "Carretera hasta la cima", "parking": true, "notes": "Cerca del límite sur. Cumbre aislada con panorámica completa. La elevación ayuda con sol bajo." }
   }
 ]
