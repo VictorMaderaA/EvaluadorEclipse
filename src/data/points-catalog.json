@@ -173,5 +173,115 @@
       "parking": true,
       "notes": "Muy cerca de Corella. Valle del Alhama con horizonte aceptable al W-NW. Alternativa si no se quiere conducir lejos."
     }
+  },
+  {
+    "id": "cat-013",
+    "name": "Burgo de Osma",
+    "region": "Soria, Castilla y León",
+    "coordinates": { "lat": 41.59, "lon": -3.07 },
+    "elevation": 895,
+    "source": "catalog",
+    "tags": ["línea central", "eclipse-2026", "red-oficial-jcyl"],
+    "metadata": { "access": "N-122 desde Soria (~45min). Autovía A-11.", "parking": true, "notes": "Ciudad histórica en la línea central. Incluida en red oficial Junta CyL. Catedral y servicios." }
+  },
+  {
+    "id": "cat-014",
+    "name": "Medinaceli",
+    "region": "Soria, Castilla y León",
+    "coordinates": { "lat": 41.17, "lon": -2.43 },
+    "elevation": 1200,
+    "source": "catalog",
+    "tags": ["elevación", "meseta", "eclipse-2026"],
+    "metadata": { "access": "A-2 (salida 150) desde Soria ~50min", "parking": true, "notes": "Villa elevada sobre cerro con panorámica 360°. Arco romano. Horizonte WNW amplio." }
+  },
+  {
+    "id": "cat-015",
+    "name": "Berlanga de Duero",
+    "region": "Soria, Castilla y León",
+    "coordinates": { "lat": 41.47, "lon": -2.86 },
+    "elevation": 930,
+    "source": "catalog",
+    "tags": ["castillo", "elevación", "eclipse-2026"],
+    "metadata": { "access": "CL-116 desde Soria (~40min)", "parking": true, "notes": "Castillo en alto con vistas W-NW. Alternativa cercana a Gormaz." }
+  },
+  {
+    "id": "cat-016",
+    "name": "Ágreda",
+    "region": "Soria, Castilla y León",
+    "coordinates": { "lat": 41.85, "lon": -1.93 },
+    "elevation": 930,
+    "source": "catalog",
+    "tags": ["entre Soria y Corella", "eclipse-2026"],
+    "metadata": { "access": "N-122 desde Soria ~40min, desde Corella ~35min", "parking": true, "notes": "Punto intermedio Soria-Corella. Villa al pie del Moncayo." }
+  },
+  {
+    "id": "cat-017",
+    "name": "Tudela (Cerro Santa Bárbara)",
+    "region": "Navarra",
+    "coordinates": { "lat": 42.07, "lon": -1.61 },
+    "elevation": 360,
+    "source": "catalog",
+    "tags": ["urbano", "accesible", "eclipse-2026"],
+    "metadata": { "access": "Desde Corella ~15min", "parking": true, "notes": "Cerro sobre Tudela, vistas W-NW. Servicios urbanos. Base para ir a Bardenas." }
+  },
+  {
+    "id": "cat-018",
+    "name": "Calahorra",
+    "region": "La Rioja",
+    "coordinates": { "lat": 42.30, "lon": -1.97 },
+    "elevation": 350,
+    "source": "catalog",
+    "tags": ["ribera Ebro", "accesible", "eclipse-2026"],
+    "metadata": { "access": "AP-68 desde Corella ~25min", "parking": true, "notes": "Ciudad romana. Miradores sobre huertas con horizonte abierto al W." }
+  },
+  {
+    "id": "cat-019",
+    "name": "Tarazona",
+    "region": "Zaragoza, Aragón",
+    "coordinates": { "lat": 41.90, "lon": -1.73 },
+    "elevation": 480,
+    "source": "catalog",
+    "tags": ["Moncayo", "eclipse-2026"],
+    "metadata": { "access": "Desde Soria ~50min, desde Corella ~30min", "parking": true, "notes": "Ciudad mudéjar al pie del Moncayo. Verificar obstrucción del Moncayo al W." }
+  },
+  {
+    "id": "cat-020",
+    "name": "Logroño (Monte Cantabria)",
+    "region": "La Rioja",
+    "coordinates": { "lat": 42.48, "lon": -2.42 },
+    "elevation": 520,
+    "source": "catalog",
+    "tags": ["urbano", "mirador", "eclipse-2026"],
+    "metadata": { "access": "AP-68 desde Corella ~60min", "parking": true, "notes": "Mirador al norte de Logroño con vistas W-NW sobre valle del Ebro." }
+  },
+  {
+    "id": "cat-021",
+    "name": "Zaragoza (Parque del Agua)",
+    "region": "Zaragoza, Aragón",
+    "coordinates": { "lat": 41.69, "lon": -0.91 },
+    "elevation": 210,
+    "source": "catalog",
+    "tags": ["urbano", "eclipse-2026", "recomendado-astrónomos"],
+    "metadata": { "access": "Desde Corella ~1h10, desde Soria ~1h30", "parking": true, "notes": "Recomendado por astrónomos por cielos limpios agosto. Horizonte Ebro al W-NW. Zona Expo." }
+  },
+  {
+    "id": "cat-022",
+    "name": "Burgos (Mirador del Castillo)",
+    "region": "Burgos, Castilla y León",
+    "coordinates": { "lat": 42.34, "lon": -3.70 },
+    "elevation": 900,
+    "source": "catalog",
+    "tags": ["línea central", "eclipse-2026", "red-oficial-jcyl"],
+    "metadata": { "access": "Desde Soria ~1h30 por N-234/A-1", "parking": true, "notes": "Ciudad en franja totalidad. Castillo elevado vistas W-NW. Red oficial Junta CyL." }
+  },
+  {
+    "id": "cat-023",
+    "name": "Sigüenza",
+    "region": "Guadalajara, Castilla-La Mancha",
+    "coordinates": { "lat": 41.07, "lon": -2.64 },
+    "elevation": 1000,
+    "source": "catalog",
+    "tags": ["castillo", "eclipse-2026"],
+    "metadata": { "access": "A-2 desde Soria ~1h o desde Medinaceli ~25min", "parking": true, "notes": "Castillo del siglo XII en cerro con horizonte W amplio. Verificar si está dentro de totalidad (cerca del límite sur)." }
   }
 ]
