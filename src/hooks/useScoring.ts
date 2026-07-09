@@ -14,8 +14,18 @@ import { generateGrid, evaluateGrid, gridToGeoJSON } from '../engines/grid-engin
 import { DEFAULT_SCORING_CONFIG } from '../config/scoring-config'
 
 const DEBOUNCE_MS = 300
-const GRID_BOUNDS = { south: 38.5, north: 42.5, west: -6.0, east: 1.0 }
-const GRID_CELL_SIZE_KM = 30
+
+/** Grid zones with variable resolution. Dense zones render on top of the global grid. */
+export interface GridZone {
+  name: string
+  bounds: { south: number; north: number; east: number; west: number }
+  cellSizeKm: number
+}
+
+export const DEFAULT_GRID_ZONES: GridZone[] = [
+  { name: 'España general', bounds: { south: 39.5, north: 43.5, west: -6.0, east: 1.0 }, cellSizeKm: 30 },
+  { name: 'Zona Soria-Corella', bounds: { south: 41.0, north: 42.5, west: -3.5, east: -1.0 }, cellSizeKm: 10 },
+]
 
 export interface ScoringState {
   loading: boolean
@@ -233,27 +243,35 @@ async function scorePoints(
 }
 
 async function scoreGrid(selectedTime: Date, solarAltitudeDeg: number): Promise<GridGeoJSON | null> {
-  const cells = generateGrid(GRID_BOUNDS, GRID_CELL_SIZE_KM)
-  const centroids = cells.map(c => c.centroid)
+  // Generate grids for all zones and combine into a single GeoJSON
+  const allFeatures: GridGeoJSON['features'] = []
 
-  // Fetch forecasts for grid centroids
-  const [primaryForecasts, secondaryForecasts] = await Promise.all([
-    getForecast({ coordinates: centroids, model: 'best_match', forecastDays: 3 }),
-    getForecast({ coordinates: centroids, model: 'icon_eu', forecastDays: 3 }),
-  ])
+  for (const zone of DEFAULT_GRID_ZONES) {
+    const cells = generateGrid(zone.bounds, zone.cellSizeKm)
+    const centroids = cells.map(c => c.centroid)
 
-  // Get elevations for grid centroids
-  const elevations = await getElevationBatch(centroids)
+    // Fetch forecasts for grid centroids
+    const [primaryForecasts, secondaryForecasts] = await Promise.all([
+      getForecast({ coordinates: centroids, model: 'best_match', forecastDays: 3 }),
+      getForecast({ coordinates: centroids, model: 'icon_eu', forecastDays: 3 }),
+    ])
 
-  // Extract instant data
-  const forecasts: (ForecastData | null)[] = primaryForecasts.map(f =>
-    f ? extractInstant(f, selectedTime) : null,
-  )
-  const primaryCCs = primaryForecasts.map(f => f ? extractInstant(f, selectedTime).cloudCover : 0)
-  const secondaryCCs = secondaryForecasts.map(f => f ? extractInstant(f, selectedTime).cloudCover : 0)
+    // Get elevations for grid centroids
+    const elevations = await getElevationBatch(centroids)
 
-  const evaluated = evaluateGrid(cells, forecasts, elevations, primaryCCs, secondaryCCs, solarAltitudeDeg)
-  return gridToGeoJSON(evaluated)
+    // Extract instant data
+    const forecasts: (ForecastData | null)[] = primaryForecasts.map(f =>
+      f ? extractInstant(f, selectedTime) : null,
+    )
+    const primaryCCs = primaryForecasts.map(f => f ? extractInstant(f, selectedTime).cloudCover : 0)
+    const secondaryCCs = secondaryForecasts.map(f => f ? extractInstant(f, selectedTime).cloudCover : 0)
+
+    const evaluated = evaluateGrid(cells, forecasts, elevations, primaryCCs, secondaryCCs, solarAltitudeDeg)
+    const zoneGeoJSON = gridToGeoJSON(evaluated)
+    allFeatures.push(...zoneGeoJSON.features)
+  }
+
+  return { type: 'FeatureCollection', features: allFeatures }
 }
 
 function buildTimelineData(
