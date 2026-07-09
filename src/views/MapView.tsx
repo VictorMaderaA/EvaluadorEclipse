@@ -10,6 +10,7 @@ const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty'
 export interface PointWithScore {
   point: ObservationPoint
   score?: number
+  scoreResult?: ScoreResult
 }
 
 export interface MapViewProps {
@@ -44,8 +45,12 @@ export function MapView({
       setClickedPoint({ lat, lon: lng, state: 'loading', result: null })
 
       if (onEvaluatePoint) {
-        const result = await onEvaluatePoint(lat, lng)
-        setClickedPoint({ lat, lon: lng, state: 'done', result })
+        try {
+          const result = await onEvaluatePoint(lat, lng)
+          setClickedPoint({ lat, lon: lng, state: 'done', result })
+        } catch {
+          setClickedPoint({ lat, lon: lng, state: 'done', result: null })
+        }
       } else {
         setClickedPoint({ lat, lon: lng, state: 'done', result: null })
       }

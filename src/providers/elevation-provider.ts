@@ -1,5 +1,6 @@
 const API_URL = 'https://api.open-meteo.com/v1/elevation'
 const RETRY_DELAY_MS = 2000
+const MAX_BATCH_SIZE = 50
 
 /**
  * Obtiene la elevación para una sola coordenada.
@@ -10,7 +11,7 @@ export async function getElevation(lat: number, lon: number): Promise<number> {
 }
 
 /**
- * Obtiene la elevación para múltiples coordenadas en una sola llamada.
+ * Obtiene la elevación para múltiples coordenadas con batching.
  * Devuelve 0 para coordenadas que fallen (fallback seguro).
  */
 export async function getElevationBatch(
@@ -18,18 +19,25 @@ export async function getElevationBatch(
 ): Promise<number[]> {
   if (coords.length === 0) return []
 
-  const latitudes = coords.map(c => c.lat.toFixed(4)).join(',')
-  const longitudes = coords.map(c => c.lon.toFixed(4)).join(',')
-  const url = `${API_URL}?latitude=${latitudes}&longitude=${longitudes}`
+  const results: number[] = []
 
-  try {
-    const response = await fetchWithRetry(url)
-    const json = (await response.json()) as { elevation: number[] }
-    return json.elevation
-  } catch {
-    // Si falla incluso con retry, devolver 0 para todas las coordenadas
-    return coords.map(() => 0)
+  for (let i = 0; i < coords.length; i += MAX_BATCH_SIZE) {
+    const batch = coords.slice(i, i + MAX_BATCH_SIZE)
+    const latitudes = batch.map(c => c.lat.toFixed(4)).join(',')
+    const longitudes = batch.map(c => c.lon.toFixed(4)).join(',')
+    const url = `${API_URL}?latitude=${latitudes}&longitude=${longitudes}`
+
+    try {
+      const response = await fetchWithRetry(url)
+      const json = (await response.json()) as { elevation: number[] }
+      results.push(...json.elevation)
+    } catch {
+      // Si falla, devolver 0 para todo el batch
+      results.push(...batch.map(() => 0))
+    }
   }
+
+  return results
 }
 
 /**

@@ -14,6 +14,7 @@ import { getElevation } from './providers/elevation-provider'
 import { getSolarPosition, getCorridorPoints } from './engines/solar-engine'
 import { calculateScore } from './engines/score-engine'
 import { loadEclipseConfig, saveEclipseConfig } from './config/eclipse-config'
+import { clearExpiredStorage } from './providers/forecast-cache'
 import type { EclipseConfig } from './config/eclipse-config'
 import type { ScoreResult } from './config/types'
 import { DEFAULT_SCORING_CONFIG } from './config/scoring-config'
@@ -28,6 +29,11 @@ function App() {
     saveEclipseConfig(config)
   }, [config])
 
+  // Cleanup expired cache on startup
+  useEffect(() => {
+    clearExpiredStorage()
+  }, [])
+
   // Real scoring orchestration
   const scoring = useScoring(selectedTime, config)
 
@@ -36,6 +42,12 @@ function App() {
     if (!selectedPointId) return null
     return scoring.points.find(p => p.point.id === selectedPointId) ?? null
   }, [selectedPointId, scoring.points])
+
+  // Memoize solar position for selected point
+  const selectedSolarPosition = useMemo(() => {
+    if (!selectedPoint) return undefined
+    return getSolarPosition(selectedTime, selectedPoint.point.coordinates.lat, selectedPoint.point.coordinates.lon)
+  }, [selectedTime, selectedPoint])
 
   // Evaluate point on click (real APIs)
   const handleEvaluatePoint = useCallback(async (lat: number, lon: number): Promise<ScoreResult | null> => {
@@ -130,13 +142,8 @@ function App() {
           {selectedPoint ? (
             <PointDetail
               point={selectedPoint.point}
-              score={selectedPoint.score !== undefined ? {
-                total: selectedPoint.score,
-                components: { meteo: 0.8, layers: 0.7, corridor: 0.6, elevation: 0.5, confidence: 0.9 },
-                penalty: 1.0,
-                explanation: 'Datos en tiempo real desde Open-Meteo.',
-              } : undefined}
-              solarPosition={getSolarPosition(selectedTime, selectedPoint.point.coordinates.lat, selectedPoint.point.coordinates.lon)}
+              score={selectedPoint.scoreResult}
+              solarPosition={selectedSolarPosition}
               timelineData={scoring.timelineData.get(selectedPoint.point.id)}
               onBack={() => setSelectedPointId(null)}
             />

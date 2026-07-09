@@ -92,6 +92,7 @@ export function destinationPoint(
  * @returns Multiplicador entre 0.0 y 1.0
  */
 export function getAltitudePenalty(altitudeDeg: number): number {
+  if (!Number.isFinite(altitudeDeg)) return 0.0
   if (altitudeDeg < 0) return 0.0
   if (altitudeDeg < 10) return 0.5 + (altitudeDeg / 10) * 0.2
   if (altitudeDeg < 30) return 0.7 + ((altitudeDeg - 10) / 20) * 0.3

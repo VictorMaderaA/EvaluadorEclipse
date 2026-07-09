@@ -25,7 +25,7 @@ export interface ScoringState {
   timelineData: Map<string, TimelineDataPoint[]>
 }
 
-export function useScoring(selectedTime: Date, _config: EclipseConfig): ScoringState {
+export function useScoring(selectedTime: Date, config: EclipseConfig): ScoringState {
   const [state, setState] = useState<ScoringState>({
     loading: true,
     error: null,
@@ -103,7 +103,7 @@ export function useScoring(selectedTime: Date, _config: EclipseConfig): ScoringS
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTime.getTime()])
+  }, [selectedTime.getTime(), config.mode, config.eclipseDate, config.eclipseTime])
 
   return state
 }
@@ -200,7 +200,7 @@ async function scorePoints(
       DEFAULT_SCORING_CONFIG,
     )
 
-    results.push({ point, score: scoreResult.total })
+    results.push({ point, score: scoreResult.total, scoreResult })
   }
 
   return results

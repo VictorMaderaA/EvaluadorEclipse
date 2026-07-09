@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import type { PointWithScore } from '../views/MapView'
 import { PointCard } from './PointCard'
 
@@ -8,7 +9,10 @@ interface RankingListProps {
 }
 
 export function RankingList({ points, selectedPointId, onSelectPoint }: RankingListProps) {
-  const sorted = [...points].sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+  const sorted = useMemo(
+    () => [...points].sort((a, b) => (b.score ?? 0) - (a.score ?? 0)),
+    [points],
+  )
 
   return (
     <div>

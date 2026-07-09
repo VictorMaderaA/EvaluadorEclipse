@@ -3,6 +3,7 @@ import type { HourlyForecast, CachedForecast } from '../config/types'
 const MEMORY_TTL_MS = 60 * 60 * 1000       // 1 hora
 const STORAGE_TTL_MS = 5 * 60 * 1000        // 5 minutos
 const STORAGE_PREFIX = 'eclipse-forecast-cache-'
+const MAX_STORAGE_ENTRIES = 200
 
 const memoryCache = new Map<string, CachedForecast>()
 
@@ -65,9 +66,20 @@ export function setInCache(key: string, data: HourlyForecast, model: string): vo
 
   // Nivel 2: localStorage
   try {
+    // Cap entries to avoid filling quota
+    const count = countStorageEntries()
+    if (count >= MAX_STORAGE_ENTRIES) {
+      clearExpiredStorage()
+    }
     localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(entry))
   } catch {
-    // localStorage lleno o no disponible — silenciar
+    // localStorage lleno o no disponible — limpiar y reintentar
+    clearExpiredStorage()
+    try {
+      localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(entry))
+    } catch {
+      // Silenciar si sigue fallando
+    }
   }
 }
 
@@ -123,5 +135,18 @@ export function clearAllCache(): void {
     }
   } catch {
     // localStorage no disponible
+  }
+}
+
+function countStorageEntries(): number {
+  try {
+    let count = 0
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key?.startsWith(STORAGE_PREFIX)) count++
+    }
+    return count
+  } catch {
+    return 0
   }
 }
