@@ -12,9 +12,10 @@ interface PointDetailProps {
   forecast?: ForecastData
   timelineData?: TimelineDataPoint[]
   onBack: () => void
+  onDelete?: () => void
 }
 
-export function PointDetail({ point, score, solarPosition, forecast, timelineData, onBack }: PointDetailProps) {
+export function PointDetail({ point, score, solarPosition, forecast, timelineData, onBack, onDelete }: PointDetailProps) {
   const [showRawData, setShowRawData] = useState(false)
 
   return (
@@ -64,11 +65,11 @@ export function PointDetail({ point, score, solarPosition, forecast, timelineDat
       {score && (
         <div className="mb-4 space-y-2">
           <h3 className="text-sm font-semibold text-gray-700">Desglose</h3>
-          <ComponentBar label="Nubosidad" value={score.components.meteo} />
-          <ComponentBar label="Capas" value={score.components.layers} />
-          <ComponentBar label="Corredor" value={score.components.corridor} />
-          <ComponentBar label="Elevación" value={score.components.elevation} />
-          <ComponentBar label="Confianza" value={score.components.confidence} />
+          <ComponentBar label="Nubosidad total" value={score.components.meteo} />
+          <ComponentBar label="Capas de nubes (baja/media/alta)" value={score.components.layers} />
+          <ComponentBar label="Dirección al Sol despejada" value={score.components.corridor} />
+          <ComponentBar label="Altitud del terreno" value={score.components.elevation} />
+          <ComponentBar label="Fiabilidad de la predicción" value={score.components.confidence} />
         </div>
       )}
 
@@ -138,6 +139,18 @@ export function PointDetail({ point, score, solarPosition, forecast, timelineDat
               </p>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Delete custom point */}
+      {point.source === 'custom' && onDelete && (
+        <div className="border-t border-gray-100 pt-3 mt-3">
+          <button
+            onClick={onDelete}
+            className="w-full text-sm bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Eliminar punto
+          </button>
         </div>
       )}
     </div>

@@ -20,18 +20,22 @@ const GRID_CELL_SIZE_KM = 30
 export interface ScoringState {
   loading: boolean
   error: string | null
+  info: string | null
   points: PointWithScore[]
   gridGeoJSON: GridGeoJSON | null
   timelineData: Map<string, TimelineDataPoint[]>
+  lastUpdated: Date | null
 }
 
-export function useScoring(selectedTime: Date, config: EclipseConfig): ScoringState {
+export function useScoring(selectedTime: Date, config: EclipseConfig, refreshKey?: number): ScoringState {
   const [state, setState] = useState<ScoringState>({
     loading: true,
     error: null,
+    info: null,
     points: [],
     gridGeoJSON: null,
     timelineData: new Map(),
+    lastUpdated: null,
   })
 
   const abortRef = useRef(false)
@@ -49,10 +53,28 @@ export function useScoring(selectedTime: Date, config: EclipseConfig): ScoringSt
     }
 
     async function runScoring() {
-      setState(prev => ({ ...prev, loading: true, error: null }))
+      setState(prev => ({ ...prev, loading: true, error: null, info: null }))
 
       try {
         const points = getAllPoints()
+
+        // Validate forecast date range (max ~7 days)
+        const now = new Date()
+        const diffMs = selectedTime.getTime() - now.getTime()
+        const diffDays = diffMs / (1000 * 60 * 60 * 24)
+        if (diffDays > 7) {
+          setState({
+            loading: false,
+            error: 'La fecha seleccionada está fuera del rango de previsión (máx. ~7 días). Los datos solo estarán disponibles cuando se acerque la fecha.',
+            info: null,
+            points: [],
+            gridGeoJSON: null,
+            timelineData: new Map(),
+            lastUpdated: null,
+          })
+          return
+        }
+
         const solar = getSolarPosition(selectedTime, 40.4, -3.7) // center of Spain for grid
 
         // Skip if sun is below horizon
@@ -60,9 +82,11 @@ export function useScoring(selectedTime: Date, config: EclipseConfig): ScoringSt
           setState({
             loading: false,
             error: null,
+            info: 'Sol bajo el horizonte a la hora seleccionada. Mueve el slider a horas diurnas para evaluar.',
             points: points.map(p => ({ point: p, score: undefined })),
             gridGeoJSON: null,
             timelineData: new Map(),
+            lastUpdated: null,
           })
           return
         }
@@ -88,9 +112,11 @@ export function useScoring(selectedTime: Date, config: EclipseConfig): ScoringSt
         setState({
           loading: false,
           error: null,
+          info: null,
           points: pointResults,
           gridGeoJSON: gridResult,
           timelineData,
+          lastUpdated: new Date(),
         })
       } catch (err) {
         if (!abortRef.current) {
@@ -103,7 +129,7 @@ export function useScoring(selectedTime: Date, config: EclipseConfig): ScoringSt
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTime.getTime(), config.mode, config.eclipseDate, config.eclipseTime])
+  }, [selectedTime.getTime(), config.mode, config.eclipseDate, config.eclipseTime, refreshKey])
 
   return state
 }

@@ -1,7 +1,8 @@
 import type { HourlyForecast, CachedForecast } from '../config/types'
 
 const MEMORY_TTL_MS = 60 * 60 * 1000       // 1 hora
-const STORAGE_TTL_MS = 5 * 60 * 1000        // 5 minutos
+// Extended TTL (2h) for field use on eclipse day — pre-loaded data survives trip to observation point
+const STORAGE_TTL_MS = 2 * 60 * 60 * 1000   // 2 horas
 const STORAGE_PREFIX = 'eclipse-forecast-cache-'
 const MAX_STORAGE_ENTRIES = 200
 

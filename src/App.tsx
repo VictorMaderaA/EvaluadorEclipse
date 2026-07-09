@@ -8,21 +8,27 @@ import { TimeSlider } from './components/TimeSlider'
 import { LoadingOverlay } from './components/LoadingOverlay'
 import { Disclaimer } from './components/Disclaimer'
 import { useScoring } from './hooks/useScoring'
-import { addCustomPoint } from './data/points-store'
+import { addCustomPoint, removeCustomPoint } from './data/points-store'
 import { getForecast } from './providers/forecast-provider'
 import { getElevation } from './providers/elevation-provider'
 import { getSolarPosition, getCorridorPoints } from './engines/solar-engine'
 import { calculateScore } from './engines/score-engine'
 import { loadEclipseConfig, saveEclipseConfig } from './config/eclipse-config'
-import { clearExpiredStorage } from './providers/forecast-cache'
+import { clearExpiredStorage, clearAllCache } from './providers/forecast-cache'
 import type { EclipseConfig } from './config/eclipse-config'
 import type { ScoreResult } from './config/types'
 import { DEFAULT_SCORING_CONFIG } from './config/scoring-config'
+
+function minutesAgo(date: Date): number {
+  return Math.max(0, Math.round((Date.now() - date.getTime()) / 60000))
+}
 
 function App() {
   const [selectedPointId, setSelectedPointId] = useState<string | null>(null)
   const [config, setConfig] = useState<EclipseConfig>(loadEclipseConfig)
   const [selectedTime, setSelectedTime] = useState<Date>(new Date())
+  const [pointsVersion, setPointsVersion] = useState(0)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   // Persist config changes
   useEffect(() => {
@@ -35,7 +41,7 @@ function App() {
   }, [])
 
   // Real scoring orchestration
-  const scoring = useScoring(selectedTime, config)
+  const scoring = useScoring(selectedTime, config, pointsVersion + refreshKey)
 
   // Find selected point data
   const selectedPoint = useMemo(() => {
@@ -48,6 +54,12 @@ function App() {
     if (!selectedPoint) return undefined
     return getSolarPosition(selectedTime, selectedPoint.point.coordinates.lat, selectedPoint.point.coordinates.lon)
   }, [selectedTime, selectedPoint])
+
+  // Refresh handler
+  const handleRefresh = useCallback(() => {
+    clearAllCache()
+    setRefreshKey(prev => prev + 1)
+  }, [])
 
   // Evaluate point on click (real APIs)
   const handleEvaluatePoint = useCallback(async (lat: number, lon: number): Promise<ScoreResult | null> => {
@@ -127,13 +139,18 @@ function App() {
       coordinates: { lat, lon },
       elevation,
     })
+    setPointsVersion(v => v + 1)
   }, [])
 
   return (
     <div className="h-screen w-screen flex flex-col">
       {/* Header */}
       <header className="h-14 bg-white border-b border-gray-200 flex items-center px-4 z-20 shrink-0">
+        <h1 className="text-sm font-bold text-gray-800 mr-4 hidden lg:block">Eclipse Viewer</h1>
         <ModeSelector config={config} onConfigChange={setConfig} />
+        <button onClick={handleRefresh} className="ml-auto text-sm text-gray-500 hover:text-gray-800 px-2 py-1" title="Actualizar datos">
+          🔄
+        </button>
       </header>
 
       {/* Main content */}
@@ -146,13 +163,34 @@ function App() {
               solarPosition={selectedSolarPosition}
               timelineData={scoring.timelineData.get(selectedPoint.point.id)}
               onBack={() => setSelectedPointId(null)}
+              onDelete={selectedPoint.point.source === 'custom' ? () => {
+                removeCustomPoint(selectedPoint.point.id)
+                setSelectedPointId(null)
+                setPointsVersion(v => v + 1)
+              } : undefined}
             />
+          ) : config.mode === 'eclipse' && (!config.eclipseDate || !config.eclipseTime) ? (
+            <div className="p-4 text-center text-sm text-gray-500">
+              <p className="text-lg mb-2">🌑</p>
+              <p className="font-medium">Modo Eclipse activo</p>
+              <p>Configura la fecha y hora del eclipse en la barra superior para ver las predicciones.</p>
+            </div>
+          ) : scoring.points.length === 0 && scoring.info ? (
+            <div className="p-4 text-center text-sm text-gray-500">
+              <p className="text-lg mb-2">🌙</p>
+              <p>{scoring.info}</p>
+            </div>
           ) : (
-            <RankingList
-              points={scoring.points}
-              selectedPointId={selectedPointId}
-              onSelectPoint={setSelectedPointId}
-            />
+            <>
+              <RankingList
+                points={scoring.points}
+                selectedPointId={selectedPointId}
+                onSelectPoint={setSelectedPointId}
+              />
+              {scoring.lastUpdated && (
+                <p className="text-xs text-gray-400 px-4 pb-1">Datos de hace {minutesAgo(scoring.lastUpdated)} min</p>
+              )}
+            </>
           )}
         </Sidebar>
 

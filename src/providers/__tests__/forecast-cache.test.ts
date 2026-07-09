@@ -49,8 +49,8 @@ describe('forecast cache', () => {
     const key = getCacheKey(40.0, -3.0, 'best_match', 3)
     setInCache(key, mockForecast, 'best_match')
 
-    // Avanzar 61 minutos (memoria TTL = 1h)
-    vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 61 * 60 * 1000)
+    // Avanzar 121 minutos (localStorage TTL = 2h)
+    vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 121 * 60 * 1000)
 
     const result = getFromCache(key)
     // Debería también fallar en localStorage (>5min)

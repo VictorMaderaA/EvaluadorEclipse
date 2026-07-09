@@ -6,7 +6,7 @@
     "coordinates": { "lat": 40.7809, "lon": -4.0065 },
     "elevation": 1860,
     "source": "catalog",
-    "tags": ["montaña", "accesible por carretera"],
+    "tags": ["montaña", "accesible por carretera", "eclipse-2026"],
     "metadata": { "access": "Puerto de montaña con aparcamiento", "parking": true }
   },
   {
@@ -14,9 +14,9 @@
     "name": "Pico Veleta (acceso carretera)",
     "region": "Sierra Nevada, Granada",
     "coordinates": { "lat": 37.0563, "lon": -3.3667 },
-    "elevation": 2500,
+    "elevation": 2550,
     "source": "catalog",
-    "tags": ["alta montaña", "horizonte despejado"],
+    "tags": ["alta montaña", "horizonte despejado", "eclipse-2027"],
     "metadata": { "access": "Carretera hasta Hoya de la Mora (2500m)", "parking": true }
   },
   {
@@ -26,7 +26,7 @@
     "coordinates": { "lat": 28.3000, "lon": -16.5117 },
     "elevation": 2390,
     "source": "catalog",
-    "tags": ["observatorio", "cielos limpios", "isla"],
+    "tags": ["observatorio", "cielos limpios", "isla", "eclipse-2026"],
     "metadata": { "access": "Carretera TF-24", "parking": true, "notes": "Requiere permiso para zona del observatorio" }
   },
   {
@@ -36,47 +36,77 @@
     "coordinates": { "lat": 40.0781, "lon": -1.0158 },
     "elevation": 1950,
     "source": "catalog",
-    "tags": ["observatorio", "baja contaminación lumínica"],
+    "tags": ["observatorio", "baja contaminación lumínica", "eclipse-2026"],
     "metadata": { "access": "Pista forestal desde Camarena de la Sierra", "parking": false }
   },
   {
     "id": "cat-005",
-    "name": "Pic du Midi de Bigorre",
-    "region": "Pirineos, Hautes-Pyrénées (Francia)",
-    "coordinates": { "lat": 42.9372, "lon": 0.1411 },
-    "elevation": 2877,
-    "source": "catalog",
-    "tags": ["observatorio", "alta montaña", "frontera"],
-    "metadata": { "access": "Teleférico desde La Mongie", "parking": true }
-  },
-  {
-    "id": "cat-006",
-    "name": "Sierra de Gúdar (Valdelinares)",
-    "region": "Teruel, Aragón",
-    "coordinates": { "lat": 40.3833, "lon": -0.6333 },
-    "elevation": 1690,
-    "source": "catalog",
-    "tags": ["meseta alta", "horizonte amplio"],
-    "metadata": { "access": "Carretera A-1701", "parking": true }
-  },
-  {
-    "id": "cat-007",
     "name": "Peña de Francia",
     "region": "Sierra de Francia, Salamanca",
     "coordinates": { "lat": 40.5128, "lon": -6.1706 },
     "elevation": 1723,
     "source": "catalog",
-    "tags": ["santuario", "horizonte 360°"],
+    "tags": ["santuario", "horizonte 360°", "eclipse-2026"],
     "metadata": { "access": "Carretera hasta la cima", "parking": true }
   },
   {
-    "id": "cat-008",
-    "name": "Moncayo (zona media)",
-    "region": "Sistema Ibérico, Zaragoza",
-    "coordinates": { "lat": 41.7872, "lon": -1.8381 },
-    "elevation": 1600,
+    "id": "cat-006",
+    "name": "Sierra de Grazalema (Torreón)",
+    "region": "Sierra de Grazalema, Cádiz",
+    "coordinates": { "lat": 36.76, "lon": -5.42 },
+    "elevation": 1654,
     "source": "catalog",
-    "tags": ["parque natural", "meseta"],
-    "metadata": { "access": "Sendero desde Santuario de Moncayo", "parking": true, "difficulty": "media" }
+    "tags": ["alta montaña", "parque natural", "eclipse-2027"],
+    "metadata": { "access": "Sendero desde Benaocaz", "parking": false, "difficulty": "alta" }
+  },
+  {
+    "id": "cat-007",
+    "name": "Tarifa (Punta Paloma)",
+    "region": "Tarifa, Cádiz",
+    "coordinates": { "lat": 36.06, "lon": -5.68 },
+    "elevation": 50,
+    "source": "catalog",
+    "tags": ["costa", "horizonte marino", "eclipse-2027"],
+    "metadata": { "access": "Carretera CA-8202", "parking": true }
+  },
+  {
+    "id": "cat-008",
+    "name": "Sierra de las Nieves",
+    "region": "Parque Nacional, Málaga",
+    "coordinates": { "lat": 36.72, "lon": -5.01 },
+    "elevation": 1500,
+    "source": "catalog",
+    "tags": ["parque nacional", "alta montaña", "eclipse-2027"],
+    "metadata": { "access": "Pista forestal desde Ronda", "parking": false }
+  },
+  {
+    "id": "cat-009",
+    "name": "Sierra Bermeja",
+    "region": "Estepona, Málaga",
+    "coordinates": { "lat": 36.50, "lon": -5.20 },
+    "elevation": 1449,
+    "source": "catalog",
+    "tags": ["montaña", "horizonte despejado", "eclipse-2027"],
+    "metadata": { "access": "Pista desde Estepona/Jubrique", "parking": true }
+  },
+  {
+    "id": "cat-010",
+    "name": "Cabo de Gata",
+    "region": "Parque Natural, Almería",
+    "coordinates": { "lat": 36.72, "lon": -2.19 },
+    "elevation": 60,
+    "source": "catalog",
+    "tags": ["costa", "cielos limpios", "eclipse-2027"],
+    "metadata": { "access": "Carretera AL-3115", "parking": true }
+  },
+  {
+    "id": "cat-011",
+    "name": "Grazalema pueblo",
+    "region": "Sierra de Grazalema, Cádiz",
+    "coordinates": { "lat": 36.77, "lon": -5.37 },
+    "elevation": 823,
+    "source": "catalog",
+    "tags": ["pueblo", "accesible", "eclipse-2027"],
+    "metadata": { "access": "Carretera A-372", "parking": true }
   }
 ]

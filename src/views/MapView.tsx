@@ -5,6 +5,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import type { GridGeoJSON } from '../engines/grid-engine'
 import type { ObservationPoint, ScoreResult } from '../config/types'
 
+// Alternative if OpenFreeMap disappears: https://basemaps.cartocdn.com/gl/positron-gl-style/style.json
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty'
 
 export interface PointWithScore {

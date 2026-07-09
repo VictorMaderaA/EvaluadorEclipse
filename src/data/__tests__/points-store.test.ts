@@ -16,7 +16,7 @@ describe('points-store', () => {
     it('returns catalog points with correct count', () => {
       const points = getCatalogPoints()
       expect(points.length).toBeGreaterThanOrEqual(5)
-      expect(points.length).toBeLessThanOrEqual(10)
+      expect(points.length).toBeLessThanOrEqual(15)
     })
 
     it('all catalog points have source "catalog"', () => {
